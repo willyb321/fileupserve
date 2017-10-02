@@ -1,17 +1,18 @@
-const nanoid = require('nanoid');
 const Datastore = require('nedb-core');
-db = new Datastore({filename: require('path').join(__dirname, 'imgDb.db'), autoload: true});
+const db = new Datastore({filename: require('path').join(__dirname, 'imgDb.db'), autoload: true});
 
-function insertImg(id, filename, path) {
+function insertImg(info) {
+	const {filename, path, mimetype} = info;
 	return new Promise(async (resolve, reject) => {
-		const already = await imageInDB(id);
+		const already = await imageInDB(filename);
 		if (already.exists) {
 			resolve(already);
 		} else {
 			db.insert({
-				_id: id,
+				_id: filename,
 				filename,
-				path
+				path,
+				mimetype
 			}, (err, newDoc) => {
 				if (err) {
 					reject(err);

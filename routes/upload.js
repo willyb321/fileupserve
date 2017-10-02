@@ -4,11 +4,11 @@ const multer = require('multer');
 const upload = multer({dest: require('path').join(__dirname, '..', 'uploads')});
 const {insertImg} = require('./dbutils');
 const token = process.env.FILEUPSERVE_TOKEN;
-router.post('/', upload.single('imageData'), (req, res, next) => {
-	let id = req.file.filename;
+router.post('/', upload.single('imageData'), (req, res) => {
+	const id = req.file.filename;
 	const reqToken = req.header('token');
 	if (reqToken === token) {
-		insertImg(id, req.file.filename, req.file.path)
+		insertImg(req.file)
 			.then(data => {
 				if (data.inserted === true) {
 					const url = `https://${req.get('X-Forwarded-Host') || req.get('host')}/i/${id}`;

@@ -1,13 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const nanoid = require('nanoid');
-const Datastore = require('nedb-core');
-const multer = require('multer');
-const upload = multer({dest: require('path').join(__dirname, '..', 'uploads')});
 const {getImg} = require('./dbutils');
-router.get('/:id', (req, res, next) => {
+router.get('/:id', (req, res) => {
 	const id = req.params.id;
-	res.type('image/png');
 	getImg(id)
 		.then(doc => {
 			console.log(doc);
@@ -15,6 +10,8 @@ router.get('/:id', (req, res, next) => {
 				res.status(404);
 				res.end();
 			} else {
+				res.type(doc.mimetype || 'image/png');
+				res.status(200);
 				res.sendFile(doc.path);
 			}
 		})

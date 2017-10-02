@@ -111,3 +111,4 @@ typings/
 
 routes/imgDb.db
 uploads/
+process.yml
