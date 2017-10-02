@@ -6,7 +6,7 @@ const {insertImg} = require('./dbutils');
 const token = process.env.FILEUPSERVE_TOKEN;
 router.post('/', upload.single('imageData'), (req, res, next) => {
 	let id = req.file.filename;
-	const reqToken = req.body.token;
+	const reqToken = req.headers.token;
 	if (reqToken === token) {
 		insertImg(id, req.file.filename, req.file.path)
 			.then(data => {
