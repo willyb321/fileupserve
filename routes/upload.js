@@ -8,7 +8,7 @@ router.post('/', upload.single('imageData'), (req, res, next) => {
 	insertImg(id, req.file.filename, req.file.path)
 		.then(data => {
 			if (data.inserted === true) {
-				const url = `${req.protocol}://${req.get('host')}/i/${id}`;
+				const url = `https://${req.get('X-Forwarded-Host') || req.get('host')}/i/${id}`;
 				res.json({done: true, url});
 			}
 		})
