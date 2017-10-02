@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -33,7 +32,7 @@ app.use((err, req, res, next) => {
 
 	// render the error page
 	res.status(err.status || 500);
-	res.render('error');
+	res.send('error');
 });
 
 module.exports = app;
