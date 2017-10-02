@@ -45,6 +45,7 @@ function getImg(id) {
 				reject(err);
 			}
 			if (doc) {
+				doc.exists = true;
 				resolve(doc);
 			} else {
 				resolve({exists: false})
