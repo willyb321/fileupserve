@@ -1,3 +1,4 @@
+///<reference path="../node_modules/@types/node/index.d.ts"/>
 const express = require('express');
 const router = express.Router();
 
@@ -7,4 +8,4 @@ router.get('/', (req, res) => {
 	res.end('<p>nah</p>')
 });
 
-module.exports = router;
+export default router;
