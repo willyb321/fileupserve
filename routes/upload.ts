@@ -29,6 +29,9 @@ router.post('/', basicAuth({users: {
 			.catch(err => {
 				console.log(err);
 			})
+	} else {
+		res.status(400);
+		res.end();
 	}
 });
 
