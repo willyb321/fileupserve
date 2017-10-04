@@ -7,19 +7,21 @@ const router = express.Router();
 router.get('/:id', (req, res) => {
 	const id: string = req.params.id;
 	getImg(id)
-		.then(doc => {
-			console.log(doc);
-			if  (!doc.exists) {
+		.then(data => {
+			console.log(data);
+			if  (!data.exists) {
 				res.status(404);
 				res.end();
 			} else {
-				res.type(doc.doc.mimetype || 'image/png');
+				res.type(data.doc.mimetype || 'image/png');
 				res.status(200);
-				res.sendFile(doc.doc.path);
+				res.sendFile(data.doc.path);
 			}
 		})
 		.catch(err => {
 			console.log(err);
+			res.status(500);
+			res.end();
 		})
 });
 

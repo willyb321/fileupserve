@@ -1,9 +1,9 @@
 ///<reference path="../node_modules/@types/node/index.d.ts"/>
-import * as express from "express";
-import {join} from "path";
-import {insertImg, checkDB} from "./dbutils";
+import * as express from 'express';
+import {join} from 'path';
+import {insertImg, checkDB} from './dbutils';
 import * as basicAuth from 'express-basic-auth';
-import * as multer from "multer";
+import * as multer from 'multer';
 
 const router = express.Router();
 const upload = multer({ dest: join(__dirname, '..', 'uploads') });

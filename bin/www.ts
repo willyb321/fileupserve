@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
-import * as http from "http";
-
-import * as debug0 from "debug";
+import * as http from 'http';
+import * as debug0 from 'debug';
 
 /**
  * Module dependencies.
@@ -77,13 +76,17 @@ function onError(error) {
 			throw error;
 	}
 }
-
+export interface serverAddress {
+	address: string;
+	family: string;
+	port: number;
+}
 /**
  * Event listener for HTTP server "listening" event.
  */
 
 function onListening() {
-	const addr = server.address();
+	const addr: serverAddress = server.address();
 	const bind = typeof addr === 'string'
 		? 'pipe ' + addr
 		: 'port ' + addr.port;
