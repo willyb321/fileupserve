@@ -16,12 +16,11 @@ router.post('/', basicAuth({users: {
 	uploader: process.env.FILEUPSERVE_PW
 }}), upload.single('imageData'), (req, res) => {
 	if (req.file) {
-		const id = req.file.filename;
 		insertImg(req.file)
 			.then((data: checkDB) => {
 				if (data.exists === true) {
 					console.log(req.file);
-					const url: string = `https://${req.get('X-Forwarded-Host') || req.get('host')}/i/${id}`;
+					const url: string = `https://${req.get('X-Forwarded-Host') || req.get('host')}/i/${req.file.filename}`;
 					const toReturn: addedData = {done: true, url: url};
 					res.json(toReturn);
 				}
