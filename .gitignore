@@ -113,3 +113,5 @@ routes/imgDb.db
 uploads/
 process.yml
 lib/
+
+ecosystem\.config\.js
