@@ -14,13 +14,13 @@ const debug = debug0('fileupserve:server');
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '3000');
+const port: number = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
-const server = http.createServer(app);
+const server: http.Server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -35,7 +35,7 @@ server.on('listening', onListening);
  */
 
 function normalizePort(val) {
-	const port = parseInt(val, 10);
+	const port: number = parseInt(val, 10);
 
 	if (isNaN(port)) {
 		// named pipe

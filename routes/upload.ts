@@ -7,8 +7,12 @@ import * as multer from "multer";
 
 const router = express.Router();
 const upload = multer({dest: join(__dirname, '..', 'uploads')});
-
 const token = process.env.FILEUPSERVE_TOKEN;
+
+export interface addedData {
+	done: boolean;
+	url: string;
+}
 router.post('/', upload.single('imageData'), (req, res) => {
 	const id = req.file.filename;
 	const reqToken = req.header('token');
@@ -17,8 +21,9 @@ router.post('/', upload.single('imageData'), (req, res) => {
 			.then((data: checkDB) => {
 				if (data.exists === true) {
 					console.log(req.file);
-					const url = `https://${req.get('X-Forwarded-Host') || req.get('host')}/i/${id}`;
-					res.json({done: true, url});
+					const url: string = `https://${req.get('X-Forwarded-Host') || req.get('host')}/i/${id}`;
+					const toReturn: addedData = {done: true, url: url};
+					res.json(toReturn);
 				}
 			})
 			.catch(err => {
