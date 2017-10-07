@@ -1,0 +1,7 @@
+extends layout
+
+block content
+	h1= title
+	for elem,ind in thumbs
+		a(href= elem.properURL)
+			img.hvr-grow(src= elem.path)

@@ -115,3 +115,5 @@ process.yml
 lib/
 
 ecosystem\.config\.js
+
+public/thumbs/
