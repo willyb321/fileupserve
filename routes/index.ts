@@ -3,11 +3,17 @@ import * as express from 'express';
 import {join, parse} from "path";
 import * as klawSync from 'klaw-sync';
 import * as sharp from 'sharp';
+import * as basicAuth from "express-basic-auth";
 
 const router = express.Router();
 
 /* GET home page. */
-router.get('/', (req, res) => {
+router.get('/', basicAuth({
+	challenge: true,
+	users: {
+		uploader: process.env.FILEUPSERVE_PW
+	}
+}), (req, res) => {
 	getThumbsForGallery()
 		.then(thumbs => {
 			res.render('index', {
@@ -17,8 +23,9 @@ router.get('/', (req, res) => {
 		})
 });
 const thumbsPath = join(__dirname, '..', '..', 'public', 'thumbs');
+
 function getThumbsForGallery() {
-	return new Promise<Array<any>>(async (resolve, reject) => {
+	return new Promise<Array<any>>(async resolve => {
 		const date = new Date();
 		const refTime = new Date().setDate(date.getDate() - 1);
 		const filterFn = item => item.stats.mtime.getTime() > refTime;
@@ -54,4 +61,5 @@ function getThumbsForGallery() {
 		resolve(thumbs);
 	})
 }
+
 export default router;
