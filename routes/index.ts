@@ -19,8 +19,11 @@ router.get('/', (req, res) => {
 const thumbsPath = join(__dirname, '..', '..', 'public', 'thumbs');
 function getThumbsForGallery() {
 	return new Promise<Array<any>>(async (resolve, reject) => {
-		const filesOrig = klawSync(join(__dirname, '..', 'uploads'), {nodir: true});
-		const thumbsOrig = klawSync(join(__dirname, '..', '..', 'public', 'thumbs'), {nodir: true});
+		const date = new Date();
+		const refTime = new Date().setDate(date.getDate() - 1);
+		const filterFn = item => item.stats.mtime.getTime() > refTime;
+		const filesOrig = klawSync(join(__dirname, '..', 'uploads'), {nodir: true, filter: filterFn});
+		const thumbsOrig = klawSync(join(__dirname, '..', '..', 'public', 'thumbs'), {nodir: true, filter: filterFn});
 		let thumbs = [];
 		// console.log(filesOrig);
 		thumbsOrig.forEach(thumb => {
