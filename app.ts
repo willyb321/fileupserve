@@ -11,6 +11,10 @@ import {join} from 'path';
 import * as responseTime from 'response-time';
 
 const app = express();
+app.get('/robots.txt', (req, res) => {
+	res.type('text/plain');
+	res.send("User-agent: *\nDisallow: /");
+});
 app.use(responseTime());
 app.use(logger('dev'));
 app.use(bodyParser.json());
