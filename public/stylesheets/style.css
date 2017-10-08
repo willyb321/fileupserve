@@ -2,7 +2,7 @@ body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   background-color: #343a40;
-  display: inline-block; }
+  text-align: center; }
 
 a {
   color: #00B7FF; }
@@ -11,19 +11,25 @@ h1 {
   color: #00B7FF; }
 
 .imgfig {
+  display: flex !important;
+  flex: 1;
   text-decoration: none;
   color: #e9ecef;
+  overflow: hidden;
   background-color: #dee2e6;
-  border: solid;
-  width: 15%;
-  padding: 50px; }
+  padding: 1em;
+  text-align: center; }
   .imgfig > figure {
-    display: block; }
-  .imgfig > figure > img {
-    width: 100%;
-    height: 100%; }
+    flex: 1; }
+
+.img {
+  object-fit: contain;
+  max-width: 100%; }
 
 .imgcap {
-  color: black; }
+  display: block !important;
+  overflow: hidden;
+  color: black;
+  text-overflow: ellipsis !important; }
 
 /*# sourceMappingURL=style.css.map */

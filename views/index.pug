@@ -3,9 +3,10 @@ extends layout
 block content
 	h1= title
 	for elem,ind in thumbs
-		div.imgfig.hvr-grow(href= elem.properURL)
-			figure
-				a
-					img(src= elem.path)
-				a(href= captions[ind])
-					figurecaption.imgcap= captions[ind]
+		.imgfig
+			figure.fig
+				a(href= elem.properURL)
+					img.img(src= elem.path)
+				a.imgcap(href= captions[ind])
+					figcaption.imgcap= captions[ind]
+
