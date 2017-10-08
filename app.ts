@@ -11,6 +11,11 @@ import {join} from 'path';
 import * as responseTime from 'response-time';
 
 const app = express();
+app.use((req, res, next) => {
+	res.setHeader('X-Robots-Tag', 'noindex');
+	next();
+});
+
 app.get('/robots.txt', (req, res) => {
 	res.type('text/plain');
 	res.send("User-agent: *\nDisallow: /");
