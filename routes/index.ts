@@ -29,7 +29,7 @@ const thumbsPath = join(__dirname, '..', '..', 'public', 'thumbs');
 
 fs.watch(join(__dirname, '..', 'uploads'), async (eventType, filename) => {
 	console.log(`event type is: ${eventType}`);
-	if (filename) {
+	if (filename && eventType === 'change') {
 		filename = join(__dirname, '..', 'uploads', filename);
 		console.log(`filename provided: ${filename}`);
 		const updated = await sharpie({path: filename});
