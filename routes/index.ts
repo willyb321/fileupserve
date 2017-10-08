@@ -9,23 +9,29 @@ import * as fs from 'fs-extra';
 const router = express.Router();
 let thumbs = [];
 let alreadyThumbed = false;
-
-/* GET home page. */
-router.get('/', basicAuth({
-	challenge: true,
-	users: {
-		uploader: process.env.FILEUPSERVE_PW
-	}
-}), (req, res) => {
-	getThumbsForGallery()
-		.then(thumbs => {
-			res.render('index', {
-				thumbs: thumbs,
-				title: 'images and stuff'
-			})
-		})
-});
 const thumbsPath = join(__dirname, '..', '..', 'public', 'thumbs');
+
+getThumbsForGallery()
+	.then(() => {
+		console.log('main page ready');
+
+		router.get('/', basicAuth({
+			challenge: true,
+			users: {
+				uploader: process.env.FILEUPSERVE_PW
+			}
+		}), (req, res) => {
+			getThumbsForGallery()
+				.then(thumbs => {
+					res.render('index', {
+						thumbs: thumbs,
+						title: 'images and stuff'
+					})
+				})
+		});
+
+	});
+
 
 fs.watch(join(__dirname, '..', 'uploads'), async (eventType, filename) => {
 	console.log(`event type is: ${eventType}`);
@@ -34,10 +40,10 @@ fs.watch(join(__dirname, '..', 'uploads'), async (eventType, filename) => {
 		console.log(`filename provided: ${filename}`);
 		const updated = await sharpie({path: filename});
 		thumbs.push(updated);
+		alreadyThumbed = true;
 	} else {
 		console.log('filename not provided');
 	}
-	alreadyThumbed = true;
 });
 
 function getThumbsForGallery() {
