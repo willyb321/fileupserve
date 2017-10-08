@@ -1,15 +1,17 @@
-import * as express from "express";
-import * as logger from "morgan";
+import * as express from 'express';
+import * as logger from 'morgan';
 import * as cookieParser from "cookie-parser";
 import * as sassMiddleware from 'node-sass-middleware'
 import * as favicon from 'serve-favicon'
-import * as bodyParser from "body-parser";
-import index from "./routes/index";
-import upload from "./routes/upload";
-import img from "./routes/img";
-import {join} from "path";
+import * as bodyParser from 'body-parser';
+import index from './routes/index';
+import upload from './routes/upload';
+import img from './routes/img';
+import {join} from 'path';
+import * as responseTime from 'response-time';
 
 const app = express();
+app.use(responseTime());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -29,7 +31,7 @@ app.use(sassMiddleware({
 	sourceMap: true
 }));
 app.use(express.static(join(__dirname, '..', 'public')));
-app.use('/thumbs/:id', express.static(join(__dirname, '..', 'public', 'thumbs')))
+app.use('/thumbs/:id', express.static(join(__dirname, '..', 'public', 'thumbs')));
 app.use('/', index);
 app.use('/i', img);
 app.use('/upload', upload);
