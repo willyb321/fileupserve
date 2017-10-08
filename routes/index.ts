@@ -57,18 +57,27 @@ interface fileObj extends klawSync.Item {
 interface klawOpts extends klawSync.Options {
 	filter: any;
 }
+
+function hasAThumb(filename: fileObj, thumbsOrig: ReadonlyArray<fileObj>) {
+	for (const i of thumbsOrig) {
+		if (i.path === filename.path) {
+			return true;
+		}
+	}
+	return false;
+}
 function getThumbsForGallery() {
-	return new Promise<Array<any>>(async resolve => {
+	return new Promise<Array<fileObj | thumbObj>>(async resolve => {
 		const date = new Date();
 		const refTime = new Date().setDate(date.getDate() - 1);
 		const filterFn = item => item.stats.mtime.getTime() > refTime;
 		const options: klawOpts = {nodir: true, filter: filterFn};
 		const filesOrig: ReadonlyArray<fileObj> = klawSync(join(__dirname, '..', 'uploads'), options);
-		const thumbsOrig = klawSync(join(__dirname, '..', '..', 'public', 'thumbs'), options);
-		thumbsOrig.forEach(thumb => {
-			filesOrig.forEach((file, ind) => {
-				filesOrig[ind].thumbed = parse(file.path).base === parse(thumb.path).base;
-			})
+		const thumbsOrig: ReadonlyArray<fileObj> = klawSync(join(__dirname, '..', '..', 'public', 'thumbs'), options);
+		filesOrig.forEach((file, ind) => {
+			if (!filesOrig.find(elem => hasAThumb(elem, thumbsOrig))) {
+				filesOrig[ind].thumbed = false;
+			}
 		});
 		if (!alreadyThumbed) {
 			for (const file of filesOrig) {
