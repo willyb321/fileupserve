@@ -1,10 +1,9 @@
 ///<reference path="../node_modules/@types/node/index.d.ts"/>
 import * as express from 'express';
-import {join, parse} from "path";
+import {join, parse} from 'path';
 import * as klawSync from 'klaw-sync';
 import * as sharp from 'sharp';
 import * as basicAuth from "express-basic-auth";
-import * as fs from 'fs-extra';
 
 const router = express.Router();
 let thumbs = [];
@@ -45,6 +44,18 @@ export async function newUpload(filename) {
 	alreadyThumbed = true;
 }
 
+export interface thumbObj {
+	thumb: {
+		format: string;
+		width: number;
+		height: number;
+		channels: number;
+		size: number;
+		path: string;
+		properURL: string;
+	}
+}
+
 function getThumbsForGallery() {
 	return new Promise<Array<any>>(async resolve => {
 		const date = new Date();
@@ -61,6 +72,10 @@ function getThumbsForGallery() {
 			for (const file of filesOrig) {
 				if (!file.thumbed) {
 					let temp = await sharpie(file);
+					const toReturn: thumbObj = {
+						thumb: temp
+					};
+					toReturn.thumb = temp;
 					thumbs.push(temp);
 				} else {
 					file.path = `/thumbs/${parse(file.path).base}`;
