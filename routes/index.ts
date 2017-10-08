@@ -45,7 +45,6 @@ export async function newUpload(filename) {
 }
 
 export interface thumbObj {
-	thumb: {
 		format: string;
 		width: number;
 		height: number;
@@ -53,7 +52,6 @@ export interface thumbObj {
 		size: number;
 		path: string;
 		properURL: string;
-	}
 }
 
 function getThumbsForGallery() {
@@ -71,11 +69,7 @@ function getThumbsForGallery() {
 		if (!alreadyThumbed) {
 			for (const file of filesOrig) {
 				if (!file.thumbed) {
-					let temp = await sharpie(file);
-					const toReturn: thumbObj = {
-						thumb: temp
-					};
-					toReturn.thumb = temp;
+					let temp: thumbObj = await sharpie(file);
 					thumbs.push(temp);
 				} else {
 					file.path = `/thumbs/${parse(file.path).base}`;
