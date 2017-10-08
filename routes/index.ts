@@ -4,10 +4,11 @@ import {join, parse} from 'path';
 import * as klawSync from 'klaw-sync';
 import * as sharp from 'sharp';
 import * as basicAuth from "express-basic-auth";
+import * as fs from 'fs-extra';
 
 const router = express.Router();
-let thumbs = [];
-let alreadyThumbed = false;
+let thumbs: Array<thumbObj | fileObj> = [];
+let alreadyThumbed: boolean = false;
 const thumbsPath = join(__dirname, '..', '..', 'public', 'thumbs');
 
 getThumbsForGallery()
@@ -39,28 +40,31 @@ getThumbsForGallery()
 
 export async function newUpload(filename) {
 	console.log(`filename provided: ${filename}`);
-	const updated = await sharpie({path: filename});
+	const fileStats = await fs.stat(filename);
+	const updated = await sharpie({path: filename, stats: fileStats});
 	thumbs.push(updated);
 	alreadyThumbed = true;
 }
 
-export interface thumbObj {
-		format: string;
-		width: number;
-		height: number;
-		channels: number;
-		size: number;
-		path: string;
-		properURL: string;
+interface thumbObj extends sharp.OutputInfo {
+	path: string;
+	properURL: string;
 }
-
+interface fileObj extends klawSync.Item {
+	thumbed?: boolean;
+	properURL?: string;
+}
+interface klawOpts extends klawSync.Options {
+	filter: any;
+}
 function getThumbsForGallery() {
 	return new Promise<Array<any>>(async resolve => {
 		const date = new Date();
 		const refTime = new Date().setDate(date.getDate() - 1);
 		const filterFn = item => item.stats.mtime.getTime() > refTime;
-		const filesOrig = klawSync(join(__dirname, '..', 'uploads'), {nodir: true, filter: filterFn});
-		const thumbsOrig = klawSync(join(__dirname, '..', '..', 'public', 'thumbs'), {nodir: true, filter: filterFn});
+		const options: klawOpts = {nodir: true, filter: filterFn};
+		const filesOrig: ReadonlyArray<fileObj> = klawSync(join(__dirname, '..', 'uploads'), options);
+		const thumbsOrig = klawSync(join(__dirname, '..', '..', 'public', 'thumbs'), options);
 		thumbsOrig.forEach(thumb => {
 			filesOrig.forEach((file, ind) => {
 				filesOrig[ind].thumbed = parse(file.path).base === parse(thumb.path).base;
@@ -83,11 +87,11 @@ function getThumbsForGallery() {
 	})
 }
 
-export function sharpie(file) {
+export function sharpie(file: fileObj) {
 	return sharp(file.path)
 		.resize(320, 240)
 		.toFile(join(thumbsPath, parse(file.path).base))
-		.then(info => {
+		.then((info: thumbObj) => {
 			info.path = `/thumbs/${parse(file.path).base}`;
 			info.properURL = `/i/${parse(file.path).base}`;
 			return info;
