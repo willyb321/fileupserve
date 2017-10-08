@@ -23,9 +23,15 @@ getThumbsForGallery()
 		}), (req, res) => {
 			getThumbsForGallery()
 				.then(thumbs => {
+					let captions = [];
+					for (const i of thumbs) {
+						const urlcap = `https://${req.get('X-Forwarded-Host') || req.get('host')}/i/${parse(i.path).base}`;
+						captions.push(urlcap)
+					}
 					res.render('index', {
 						thumbs: thumbs,
-						title: 'images and stuff'
+						captions,
+						title: 'Images and stuff'
 					})
 				})
 		});

@@ -1,11 +1,29 @@
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif; }
-
-img {
-  padding: 50px; }
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #343a40;
+  display: inline-block; }
 
 a {
   color: #00B7FF; }
+
+h1 {
+  color: #00B7FF; }
+
+.imgfig {
+  text-decoration: none;
+  color: #e9ecef;
+  background-color: #dee2e6;
+  border: solid;
+  width: 15%;
+  padding: 50px; }
+  .imgfig > figure {
+    display: block; }
+  .imgfig > figure > img {
+    width: 100%;
+    height: 100%; }
+
+.imgcap {
+  color: black; }
 
 /*# sourceMappingURL=style.css.map */
