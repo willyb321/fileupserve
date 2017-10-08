@@ -38,19 +38,12 @@ getThumbsForGallery()
 
 	});
 
-
-fs.watch(join(__dirname, '..', 'uploads'), async (eventType, filename) => {
-	console.log(`event type is: ${eventType}`);
-	if (filename && eventType === 'change') {
-		filename = join(__dirname, '..', 'uploads', filename);
-		console.log(`filename provided: ${filename}`);
-		const updated = await sharpie({path: filename});
-		thumbs.push(updated);
-		alreadyThumbed = true;
-	} else {
-		console.log('filename not provided');
-	}
-});
+export async function newUpload(filename) {
+	console.log(`filename provided: ${filename}`);
+	const updated = await sharpie({path: filename});
+	thumbs.push(updated);
+	alreadyThumbed = true;
+}
 
 function getThumbsForGallery() {
 	return new Promise<Array<any>>(async resolve => {
@@ -81,7 +74,7 @@ function getThumbsForGallery() {
 	})
 }
 
-function sharpie(file) {
+export function sharpie(file) {
 	return sharp(file.path)
 		.resize(320, 240)
 		.toFile(join(thumbsPath, parse(file.path).base))
