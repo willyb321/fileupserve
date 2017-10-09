@@ -23,10 +23,8 @@ router.post('/', basicAuth({users: {
 					console.log(req.file);
 					const url: string = `https://${req.get('X-Forwarded-Host') || req.get('host')}/i/${req.file.filename}`;
 					const toReturn: addedData = {done: true, url: url};
-					newUpload(req.file.path)
-						.then(() => {
-							res.json(toReturn);
-						})
+					res.json(toReturn);
+					newUpload(req.file.path);
 				}
 			})
 			.catch(err => {
