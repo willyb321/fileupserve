@@ -4,11 +4,16 @@ import * as cookieParser from "cookie-parser";
 import * as sassMiddleware from 'node-sass-middleware'
 import * as favicon from 'serve-favicon'
 import * as bodyParser from 'body-parser';
+import {join} from 'path';
+import * as responseTime from 'response-time';
+import * as fs from 'fs-extra';
+fs.ensureDirSync(join(__dirname, '..', 'public', 'thumbs'));
+fs.ensureDirSync(join(__dirname, 'uploads'));
+
 import index from './routes/index';
 import upload from './routes/upload';
 import img from './routes/img';
-import {join} from 'path';
-import * as responseTime from 'response-time';
+
 
 const app = express();
 app.use((req, res, next) => {
@@ -16,7 +21,7 @@ app.use((req, res, next) => {
 	next();
 });
 
-app.get('/robots.txt', (req, res) => {
+app.get('/robots.txt', (req: express.Request, res: express.Response) => {
 	res.type('text/plain');
 	res.send("User-agent: *\nDisallow: /");
 });

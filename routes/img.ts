@@ -1,13 +1,13 @@
 ///<reference path="../node_modules/@types/node/index.d.ts"/>
 import * as express from "express";
-import {getImg} from './dbutils'
+import {getImg, checkDB} from './dbutils'
 
 const router = express.Router();
 
-router.get('/:id', (req, res) => {
+router.get('/:id', (req: express.Request, res: express.Response) => {
 	const id: string = req.params.id;
 	getImg(id)
-		.then(data => {
+		.then((data: checkDB) => {
 			console.log(data);
 			if  (!data.exists) {
 				res.status(404);

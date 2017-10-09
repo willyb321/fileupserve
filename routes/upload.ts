@@ -9,13 +9,13 @@ import {newUpload} from "./index";
 const router = express.Router();
 const upload = multer({ dest: join(__dirname, '..', 'uploads') });
 
-export interface addedData {
+interface addedData {
 	done: boolean;
 	url: string;
 }
 router.post('/', basicAuth({users: {
 	uploader: process.env.FILEUPSERVE_PW
-}}), upload.single('imageData'), (req, res) => {
+}}), upload.single('imageData'), (req: express.Request, res: express.Response) => {
 	if (req.file) {
 		insertImg(req.file)
 			.then((data: checkDB) => {

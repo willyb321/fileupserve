@@ -20,9 +20,9 @@ getThumbsForGallery()
 			users: {
 				uploader: process.env.FILEUPSERVE_PW
 			}
-		}), (req, res) => {
+		}), (req: express.Request, res: express.Response) => {
 			getThumbsForGallery()
-				.then(thumbs => {
+				.then((thumbs: Array<thumbObj | fileObj>) => {
 					let captions = [];
 					for (const i of thumbs) {
 						const urlcap = `https://${req.get('X-Forwarded-Host') || req.get('host')}/i/${parse(i.path).base}`;
@@ -38,7 +38,7 @@ getThumbsForGallery()
 
 	});
 
-export async function newUpload(filename) {
+export async function newUpload(filename: string) {
 	console.log(`filename provided: ${filename}`);
 	const fileStats = await fs.stat(filename);
 	const updated = await sharpie({path: filename, stats: fileStats});

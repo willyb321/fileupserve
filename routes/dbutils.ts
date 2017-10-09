@@ -1,4 +1,6 @@
-const Datastore = require('nedb-core');
+import * as Datastore from 'nedb-core';
+import * as multer from 'multer';
+
 const db = new Datastore({filename: require('path').join(__dirname, 'imgDb.db'), autoload: true});
 
 export interface checkDB {
@@ -18,7 +20,7 @@ export interface dbDoc {
  * @param {object} info - multer file object.
  * @returns {Promise.<object>} - The doc and also whether it was inserted.
  */
-export function insertImg(info) {
+export function insertImg(info: Express.Multer.File) {
 	const {filename, path, mimetype} = info;
 	return new Promise<checkDB>(async (resolve, reject) => {
 		const already: checkDB = await imageInDB(filename);
@@ -30,7 +32,7 @@ export function insertImg(info) {
 				filename,
 				path,
 				mimetype
-			}, (err, newDoc) => {
+			}, (err: Error, newDoc: dbDoc) => {
 				if (err) {
 					reject(err);
 				} else {
@@ -53,9 +55,11 @@ function imageInDB(id) {
 				reject(err);
 			}
 			if (doc) {
-				resolve({exists: true, doc});
+				const toReturn: checkDB = {exists: true, doc};
+				resolve(toReturn);
 			} else {
-				resolve({exists: false, doc: null});
+				const toReturn: checkDB = {exists: false, doc: null};
+				resolve(toReturn);
 			}
 		})
 	})
@@ -68,7 +72,7 @@ function imageInDB(id) {
  */
 export function getImg(id) {
 	return new Promise<checkDB>((resolve, reject) => {
-		db.findOne({_id: id}, (err: Error, doc) => {
+		db.findOne({_id: id}, (err: Error, doc: dbDoc) => {
 			if (err) {
 				reject(err);
 			}
