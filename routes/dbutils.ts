@@ -1,5 +1,4 @@
 import * as Datastore from 'nedb-core';
-import * as multer from 'multer';
 
 const db = new Datastore({filename: require('path').join(__dirname, 'imgDb.db'), autoload: true});
 

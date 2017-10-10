@@ -14,8 +14,11 @@ router.get('/:id', (req: express.Request, res: express.Response) => {
 				res.end();
 			} else {
 				res.type(data.doc.mimetype || 'image/png');
-				res.status(200);
-				res.sendFile(data.doc.path);
+				const resOpts = {
+					dotfiles: 'deny',
+					maxAge: 86400000*7
+				};
+				res.sendFile(data.doc.path, resOpts);
 			}
 		})
 		.catch(err => {

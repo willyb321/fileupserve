@@ -2,7 +2,6 @@ import * as express from 'express';
 import * as logger from 'morgan';
 import * as cookieParser from "cookie-parser";
 import * as sassMiddleware from 'node-sass-middleware'
-import * as favicon from 'serve-favicon'
 import * as bodyParser from 'body-parser';
 import {join} from 'path';
 import * as responseTime from 'response-time';
@@ -16,6 +15,8 @@ import img from './routes/img';
 
 
 const app = express();
+const cacheTime: number = 86400000*7;
+
 app.use((req, res, next) => {
 	res.setHeader('X-Robots-Tag', 'noindex');
 	next();
@@ -35,17 +36,14 @@ app.use(cookieParser());
 app.set('views', join(__dirname, '..', 'views'));
 app.set('view engine', 'pug');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-
 app.use(sassMiddleware({
 	src: join(__dirname, '..', 'public'),
 	dest: join(__dirname, '..', 'public'),
 	indentedSyntax: true, // true = .sass and false = .scss
 	sourceMap: true
 }));
-app.use(express.static(join(__dirname, '..', 'public')));
-app.use('/thumbs/:id', express.static(join(__dirname, '..', 'public', 'thumbs')));
+app.use(express.static(join(__dirname, '..', 'public'), {maxAge: cacheTime}));
+app.use('/thumbs/:id', express.static(join(__dirname, '..', 'public', 'thumbs'), {maxAge: cacheTime}));
 app.use('/', index);
 app.use('/i', img);
 app.use('/upload', upload);
