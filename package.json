@@ -7,7 +7,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "dev": "concurrently \"npm run watch\" \"npm run start\"",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "cypress:run": "npm run build && concurrently -s first -k \"node ./lib/bin/www.js\" \"cypress run --record\""
   },
   "dependencies": {
     "body-parser": "~1.18.2",

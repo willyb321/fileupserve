@@ -17,7 +17,7 @@ interface addedData {
 
 router.post('/', basicAuth({
 	users: {
-		uploader: process.env.FILEUPSERVE_PW,
+		uploader: (process.env.FILEUPSERVE_PW || 'test')
 	},
 	challenge: true
 }), upload.single('imageData'), (req: express.Request, res: express.Response) => {

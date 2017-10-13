@@ -18,7 +18,7 @@ getThumbsForGallery()
 		router.get('/', basicAuth({
 			challenge: true,
 			users: {
-				uploader: process.env.FILEUPSERVE_PW
+				uploader: (process.env.FILEUPSERVE_PW || 'test')
 			}
 		}), (req: express.Request, res: express.Response) => {
 			getThumbsForGallery()

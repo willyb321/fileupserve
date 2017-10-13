@@ -119,3 +119,5 @@ ecosystem\.config\.js
 public/thumbs/
 
 cypress/screenshots/
+
+cypress/videos/

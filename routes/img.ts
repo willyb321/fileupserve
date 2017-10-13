@@ -38,7 +38,7 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 
 router.get('/:id', basicAuth({
 	users: {
-		uploader: process.env.FILEUPSERVE_PW,
+		uploader: (process.env.FILEUPSERVE_PW || 'test')
 	},
 	challenge: true
 }), (req: express.Request, res: express.Response) => {
