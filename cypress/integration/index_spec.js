@@ -59,7 +59,7 @@ describe('Delete test', function () {
 	it('Can delete images', function () {
 		cy.visit('/')
 			.then(function () {
-				cy.request('POST', `${Cypress.$('.img:first').parent().attr('href')}?delete=true`)
+				cy.request(`${Cypress.$('.img:first').parent().attr('href')}?delete=true`)
 					.then(function (response) {
 						expect(response.status).to.eq(200);
 						expect(response.body).to.have.property('deleted');
