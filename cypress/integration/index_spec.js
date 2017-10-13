@@ -68,7 +68,7 @@ describe('Delete test', function () {
 						expect(response.headers).to.have.property('x-response-time');
 					})
 			})
-	})
+	});
 	it('Actually deleted the image', function () {
 		cy.visit('/')
 			.then(function () {
