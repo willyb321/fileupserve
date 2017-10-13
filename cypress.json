@@ -1,5 +1,6 @@
 {
-	"baseUrl": "http://uploader:test@localhost:3000",
-	"viewportWidth": 1280,
-	"viewportHeight": 720
+  "baseUrl": "http://uploader:test@localhost:3000",
+  "viewportWidth": 1280,
+  "viewportHeight": 720,
+  "projectId": "bo6dwm"
 }
