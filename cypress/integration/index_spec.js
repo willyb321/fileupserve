@@ -31,9 +31,9 @@ describe('Upload test', function () {
 			})
 	});
 	it('Can see images on the index page', function () {
-		cy.visit('/')
+		return cy.visit('/')
 			.then(function () {
-				cy.get('.img:first')
+				return cy.get('.img:first')
 					.should('be.visible')
 					.should('have.class', 'img');
 			})
@@ -45,6 +45,19 @@ describe('Upload test', function () {
 				cy.request(Cypress.$('.img:first').parent().attr('href'))
 					.then(function (response) {
 						expect(response.status).to.eq(200);
+						expect(response).to.have.property('headers');
+						expect(response.headers).to.have.property('x-robots-tag', 'noindex');
+						expect(response.headers).to.have.property('x-response-time');
+					})
+			})
+	})
+	it('Can delete images', function () {
+		cy.visit('/')
+			.then(function () {
+				cy.request('POST', `${Cypress.$('.img:first').parent().attr('href')}?delete=true`)
+					.then(function (response) {
+						expect(response.status).to.eq(200);
+						expect(response.body).to.have.property('deleted');
 						expect(response).to.have.property('headers');
 						expect(response.headers).to.have.property('x-robots-tag', 'noindex');
 						expect(response.headers).to.have.property('x-response-time');
