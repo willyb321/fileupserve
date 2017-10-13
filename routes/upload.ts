@@ -4,7 +4,7 @@ import {join} from 'path';
 import {insertImg, checkDB} from './dbutils';
 import * as basicAuth from 'express-basic-auth';
 import * as multer from 'multer';
-import {newUpload} from "./index";
+import {newUpload} from './index';
 
 const router = express.Router();
 const upload = multer({dest: join(__dirname, '..', 'uploads')});
@@ -28,8 +28,8 @@ router.post('/', basicAuth({
 					console.log(req.file);
 					const url: string = `${req.get('X-Forwarded-Proto') || req.protocol}://${req.get('X-Forwarded-Host') || req.get('host')}/i/${req.file.filename}`;
 					const toReturn: addedData = {done: true, url: url, deleteURL: `${url}?delete=true`};
-					res.json(toReturn);
-					newUpload(req.file.path);
+					newUpload(req.file.path)
+						.then(() => res.json(toReturn));
 				}
 			})
 			.catch(err => {
