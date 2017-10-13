@@ -4,7 +4,7 @@ import {getImg, checkDB, removeImg} from './dbutils'
 import * as fs from 'fs-extra';
 import * as basicAuth from "express-basic-auth";
 import {join} from "path";
-import {thumbs} from "./index";
+import {fileRemoved} from "./index";
 
 const router = express.Router();
 
@@ -57,8 +57,7 @@ router.get('/:id', basicAuth({
 							if (fs.existsSync(join(__dirname, '..', '..', 'public', 'thumbs', data.doc.filename))) {
 								fs.unlinkSync(join(__dirname, '..', '..', 'public', 'thumbs', data.doc.filename));
 								const path = join(__dirname, '..', '..', 'public', 'thumbs', data.doc.filename);
-								const index = thumbs.findIndex(elem => (elem && elem.filePath === path));
-								delete thumbs[index];
+								fileRemoved(path);
 							}
 							res.status(200);
 							res.json({deleted: deleted});

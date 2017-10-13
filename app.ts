@@ -6,6 +6,7 @@ import * as bodyParser from 'body-parser';
 import {join} from 'path';
 import * as responseTime from 'response-time';
 import * as fs from 'fs-extra';
+
 fs.ensureDirSync(join(__dirname, '..', 'public', 'thumbs'));
 fs.ensureDirSync(join(__dirname, 'uploads'));
 
@@ -14,8 +15,8 @@ import upload from './routes/upload';
 import img from './routes/img';
 
 
-const app = express();
-const cacheTime: number = 86400000*7;
+const app: express.Application = express();
+const cacheTime: number = 86400000 * 7;
 
 app.use((req, res, next) => {
 	res.setHeader('X-Robots-Tag', 'noindex');

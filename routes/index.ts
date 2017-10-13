@@ -6,10 +6,10 @@ import * as sharp from 'sharp';
 import * as basicAuth from "express-basic-auth";
 import * as fs from 'fs-extra';
 
-const router = express.Router();
-export let thumbs: Array<thumbObj | fileObj> = [];
+const router: express.Router = express.Router();
+let thumbs: Array<thumbObj | fileObj> = [];
 let alreadyThumbed: boolean = false;
-const thumbsPath = join(__dirname, '..', '..', 'public', 'thumbs');
+const thumbsPath: string = join(__dirname, '..', '..', 'public', 'thumbs');
 
 getThumbsForGallery()
 	.then(() => {
@@ -39,6 +39,11 @@ getThumbsForGallery()
 		});
 
 	});
+
+export function fileRemoved(path: string) {
+	const index = thumbs.findIndex(elem => (elem && elem.filePath === path));
+	thumbs.splice(index, 1)
+}
 
 export async function newUpload(filename: string) {
 	console.log(`filename provided: ${filename}`);
