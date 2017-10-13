@@ -53,6 +53,18 @@ describe('Index test', function () {
 						expect(response.headers).to.have.property('x-response-time');
 					})
 			})
+	});
+	it('Can view the thumbnails', function () {
+		cy.visit('/')
+			.then(function () {
+				cy.request(Cypress.$('.img:first').attr('src'))
+					.then(function (response) {
+						expect(response.status).to.eq(200);
+						expect(response).to.have.property('headers');
+						expect(response.headers).to.have.property('x-robots-tag', 'noindex');
+						expect(response.headers).to.have.property('x-response-time');
+					})
+			})
 	})
 });
 describe('Delete test', function () {
@@ -72,8 +84,8 @@ describe('Delete test', function () {
 	it('Actually deleted the image', function () {
 		cy.visit('/')
 			.then(function () {
-				return cy.get('.img')
-					.should('not', 'exist')
+				cy.get('.img')
+					.should('not.exist')
 			})
 	})
 });
