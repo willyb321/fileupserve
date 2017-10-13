@@ -10,4 +10,5 @@ block content
 						img.img(src= elem.path)
 					a.imgcap(href= captions[ind] target="_blank")
 						figcaption.imgcap= captions[ind]
-
+					a.imgcap.delete(href= captions[ind] + "?delete=true" target="_blank")
+						figcaption.imgcap Delete Image

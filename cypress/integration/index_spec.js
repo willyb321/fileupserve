@@ -1,4 +1,13 @@
 describe('Upload test', function () {
+	it('Should have no images to start', function () {
+		cy.visit('/')
+			.then(function () {
+				cy.screenshot();
+				cy.get('.img')
+					.should('not.exist')
+			})
+	});
+
 	it('Can upload', function () {
 		return cy.fixture('img/rss.png', 'binary')
 			.then(function (img) {
@@ -45,6 +54,7 @@ describe('Index test', function () {
 	it('Can load an image that was uploaded', function () {
 		cy.visit('/')
 			.then(function () {
+				cy.screenshot();
 				cy.request(Cypress.$('.img:first').parent().attr('href'))
 					.then(function (response) {
 						expect(response.status).to.eq(200);
@@ -57,6 +67,7 @@ describe('Index test', function () {
 	it('Can view the thumbnails', function () {
 		cy.visit('/')
 			.then(function () {
+				cy.screenshot();
 				cy.request(Cypress.$('.img:first').attr('src'))
 					.then(function (response) {
 						expect(response.status).to.eq(200);
@@ -71,6 +82,7 @@ describe('Delete test', function () {
 	it('Can delete images', function () {
 		cy.visit('/')
 			.then(function () {
+				cy.screenshot();
 				cy.request(`${Cypress.$('.img:first').parent().attr('href')}?delete=true`)
 					.then(function (response) {
 						expect(response.status).to.eq(200);
@@ -84,6 +96,7 @@ describe('Delete test', function () {
 	it('Actually deleted the image', function () {
 		cy.visit('/')
 			.then(function () {
+				cy.screenshot();
 				cy.get('.img')
 					.should('not.exist')
 			})
