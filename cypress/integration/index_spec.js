@@ -19,7 +19,7 @@ describe('Upload test', function () {
 					})
 						.then(data => {
 							expect(data).to.have.property('url');
-							cy.request(data.url)
+							return cy.request(data.url)
 								.then(function (response) {
 									expect(response.status).to.eq(200);
 									expect(response).to.have.property('headers');
@@ -30,9 +30,12 @@ describe('Upload test', function () {
 				})
 			})
 	});
+});
+describe('Index test', function () {
 	it('Can see images on the index page', function () {
 		return cy.visit('/')
 			.then(function () {
+				cy.screenshot();
 				return cy.get('.img:first')
 					.should('be.visible')
 					.should('have.class', 'img');
@@ -51,6 +54,8 @@ describe('Upload test', function () {
 					})
 			})
 	})
+});
+describe('Delete test', function () {
 	it('Can delete images', function () {
 		cy.visit('/')
 			.then(function () {
@@ -64,4 +69,11 @@ describe('Upload test', function () {
 					})
 			})
 	})
-})
+	it('Actually deleted the image', function () {
+		cy.visit('/')
+			.then(function () {
+				return cy.get('.img')
+					.should('not', 'exist')
+			})
+	})
+});
