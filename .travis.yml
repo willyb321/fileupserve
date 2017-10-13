@@ -10,6 +10,3 @@ cache:
 
 before_script:
   - npm run build
-
-script:
-  - npm run cypress:run
