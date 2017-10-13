@@ -3,6 +3,8 @@ import * as express from "express";
 import {getImg, checkDB, removeImg} from './dbutils'
 import * as fs from 'fs-extra';
 import * as basicAuth from "express-basic-auth";
+import {join} from "path";
+import {thumbs} from "./index";
 
 const router = express.Router();
 
@@ -48,6 +50,12 @@ router.post('/:id', basicAuth({
 					removeImg(data.doc._id)
 						.then(deleted => {
 							fs.unlinkSync(data.doc.path);
+							if (fs.existsSync(join(__dirname, '..', '..', 'public', 'thumbs', data.doc.filename))) {
+								fs.unlinkSync(join(__dirname, '..', '..', 'public', 'thumbs', data.doc.filename));
+								const path = join(__dirname, '..', '..', 'public', 'thumbs', data.doc.filename);
+								const index = thumbs.findIndex(elem => (elem && elem.filePath === path));
+								delete thumbs[index];
+							}
 							res.status(200);
 							res.json({deleted: deleted});
 						}).catch(err => {

@@ -7,7 +7,7 @@ import * as basicAuth from "express-basic-auth";
 import * as fs from 'fs-extra';
 
 const router = express.Router();
-let thumbs: Array<thumbObj | fileObj> = [];
+export let thumbs: Array<thumbObj | fileObj> = [];
 let alreadyThumbed: boolean = false;
 const thumbsPath = join(__dirname, '..', '..', 'public', 'thumbs');
 
@@ -25,8 +25,10 @@ getThumbsForGallery()
 				.then((thumbs: Array<thumbObj | fileObj>) => {
 					let captions = [];
 					for (const i of thumbs) {
-						const urlcap = `https://${req.get('X-Forwarded-Host') || req.get('host')}/i/${parse(i.path).base}`;
-						captions.push(urlcap)
+						if (i) {
+							const urlcap = `https://${req.get('X-Forwarded-Host') || req.get('host')}/i/${parse(i.path).base}`;
+							captions.push(urlcap)
+						}
 					}
 					res.render('index', {
 						thumbs: thumbs,
@@ -42,6 +44,7 @@ export async function newUpload(filename: string) {
 	console.log(`filename provided: ${filename}`);
 	const fileStats = await fs.stat(filename);
 	const updated = await sharpie({path: filename, stats: fileStats});
+
 	thumbs.push(updated);
 	alreadyThumbed = true;
 }
@@ -49,10 +52,12 @@ export async function newUpload(filename: string) {
 interface thumbObj extends sharp.OutputInfo {
 	path: string;
 	properURL: string;
+	filePath: string;
 }
 interface fileObj extends klawSync.Item {
 	thumbed?: boolean;
 	properURL?: string;
+	filePath?: string;
 }
 interface klawOpts extends klawSync.Options {
 	filter: any;
@@ -60,7 +65,7 @@ interface klawOpts extends klawSync.Options {
 
 function hasAThumb(filename: fileObj, thumbsOrig: ReadonlyArray<fileObj>) {
 	for (const i of thumbsOrig) {
-		if (i.path === filename.path) {
+		if (filename && i && i.path === filename.path) {
 			return true;
 		}
 	}
@@ -103,6 +108,7 @@ export function sharpie(file: fileObj) {
 		.then((info: thumbObj) => {
 			info.path = `/thumbs/${parse(file.path).base}`;
 			info.properURL = `/i/${parse(file.path).base}`;
+			info.filePath = join(thumbsPath, parse(file.path).base);
 			return info;
 		})
 		.catch(err => {
