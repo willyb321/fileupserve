@@ -26,7 +26,7 @@ getThumbsForGallery()
 					let captions = [];
 					for (const i of thumbs) {
 						if (i) {
-							const urlcap = `https://${req.get('X-Forwarded-Host') || req.get('host')}/i/${parse(i.path).base}`;
+							const urlcap = `${req.get('X-Forwarded-Proto') || req.protocol}://${req.get('X-Forwarded-Host') || req.get('host')}/i/${parse(i.path).base}`;
 							captions.push(urlcap)
 						}
 					}
