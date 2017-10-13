@@ -12,6 +12,7 @@ const upload = multer({dest: join(__dirname, '..', 'uploads')});
 interface addedData {
 	done: boolean;
 	url: string;
+	deleteURL: string;
 }
 
 router.post('/', basicAuth({
@@ -26,7 +27,7 @@ router.post('/', basicAuth({
 				if (data.exists === true) {
 					console.log(req.file);
 					const url: string = `${req.get('X-Forwarded-Proto') || req.protocol}://${req.get('X-Forwarded-Host') || req.get('host')}/i/${req.file.filename}`;
-					const toReturn: addedData = {done: true, url: url};
+					const toReturn: addedData = {done: true, url: url, deleteURL: `${url}?delete=true`};
 					res.json(toReturn);
 					newUpload(req.file.path);
 				}
