@@ -4,7 +4,7 @@ node_js:
   - 8
 
 before_script:
-  - npm i
+  - npm run build
 
 script:
   - npm run cypress:run
