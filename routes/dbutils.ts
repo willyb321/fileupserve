@@ -91,3 +91,15 @@ export function getImg(id) {
 		})
 	})
 }
+
+export function removeImg(id) {
+	return new Promise((resolve, reject) => {
+	db.remove({_id: id}, (err, numRemoved) => {
+		if (err) {
+			console.log(err);
+			reject({deleted: false, err});
+		}
+		resolve({deleted: true, numRemoved});
+	})
+	})
+}

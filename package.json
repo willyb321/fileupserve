@@ -6,7 +6,8 @@
     "start": "nodemon ./lib/bin/www.js",
     "build": "tsc",
     "watch": "tsc -w",
-    "dev": "concurrently \"npm run watch\" \"npm run start\""
+    "dev": "concurrently \"npm run watch\" \"npm run start\"",
+    "cypress:open": "cypress open"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@types/body-parser": "^1.16.5",
     "@types/cookie-parser": "^1.4.1",
+    "@types/cypress": "^0.1.2",
     "@types/debug": "^0.0.30",
     "@types/express": "^4.0.37",
     "@types/file-url": "^2.0.0",
@@ -45,6 +47,7 @@
     "@types/serve-favicon": "^2.2.29",
     "@types/sharp": "^0.17.4",
     "concurrently": "^3.5.0",
+    "cypress": "^1.0.1",
     "nodemon": "^1.12.1",
     "typescript": "^2.5.3"
   }

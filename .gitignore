@@ -117,3 +117,5 @@ lib/
 ecosystem\.config\.js
 
 public/thumbs/
+
+cypress/screenshots/

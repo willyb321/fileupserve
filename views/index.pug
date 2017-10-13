@@ -3,10 +3,11 @@ extends layout
 block content
 	h1= title
 	for elem,ind in thumbs
-		.imgfig
-			figure.fig
-				a(href= elem.properURL)
-					img.img(src= elem.path)
-				a.imgcap(href= captions[ind])
-					figcaption.imgcap= captions[ind]
+		if elem
+			.imgfig
+				figure.fig
+					a(href= elem.properURL)
+						img.img(src= elem.path)
+					a.imgcap(href= captions[ind] target="_blank")
+						figcaption.imgcap= captions[ind]
 
