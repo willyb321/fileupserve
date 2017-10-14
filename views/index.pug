@@ -2,6 +2,8 @@ extends layout
 
 block content
 	h1= title
+		a(href="/?page=" + (parseInt(pagination.currentPage) + 1) style="float: right;") Next page
+		a(href="/?page=" + (parseInt(pagination.currentPage) - 1) style="float: left;") Previous page
 	for elem,ind in thumbs
 		if elem
 			.imgfig

@@ -5,12 +5,15 @@ import * as klawSync from 'klaw-sync';
 import * as sharp from 'sharp';
 import * as basicAuth from "express-basic-auth";
 import * as fs from 'fs-extra';
+import * as paginate from 'paginate-array';
 
 const router: express.Router = express.Router();
 let thumbs: Array<thumbObj | fileObj> = [];
 let alreadyThumbed: boolean = false;
 const thumbsPath: string = join(__dirname, '..', '..', 'public', 'thumbs');
-
+const filesPath: string = join(__dirname, '..', 'uploads');
+const allFiles: ReadonlyArray<fileObj> = klawSync(filesPath, {nodir: true});
+const allThumbs: ReadonlyArray<fileObj> = klawSync(thumbsPath, {nodir: true});
 getThumbsForGallery()
 	.then(() => {
 		console.log('main page ready');
@@ -21,18 +24,20 @@ getThumbsForGallery()
 				uploader: (process.env.FILEUPSERVE_PW || 'test')
 			}
 		}), (req: express.Request, res: express.Response) => {
-			getThumbsForGallery()
-				.then((thumbs: Array<thumbObj | fileObj>) => {
+			const page: number = parseInt(req.query.page, 10) || 1;
+			getThumbsForGallery(page)
+				.then((thumbs: thumbReturn) => {
 					let captions = [];
-					for (const i of thumbs) {
+					for (const i of thumbs.thumbs) {
 						if (i) {
 							const urlcap = `${req.get('X-Forwarded-Proto') || req.protocol}://${req.get('X-Forwarded-Host') || req.get('host')}/i/${parse(i.path).base}`;
 							captions.push(urlcap)
 						}
 					}
 					res.render('index', {
-						thumbs: thumbs,
+						thumbs: thumbs.thumbs,
 						captions,
+						pagination: thumbs.pagination,
 						title: 'Images and stuff'
 					})
 				})
@@ -76,21 +81,24 @@ function hasAThumb(filename: fileObj, thumbsOrig: ReadonlyArray<fileObj>) {
 	}
 	return false;
 }
-function getThumbsForGallery() {
-	return new Promise<Array<fileObj | thumbObj>>(async resolve => {
+
+function getThumbsForGallery(page?: number) {
+	return new Promise(async resolve => {
 		const date = new Date();
 		const refTime = new Date().setDate(date.getDate() - 3);
 		const filterFn = item => item.stats.mtime.getTime() > refTime;
 		const options: klawOpts = {nodir: true, filter: filterFn};
-		const filesOrig: ReadonlyArray<fileObj> = klawSync(join(__dirname, '..', 'uploads'), options);
-		const thumbsOrig: ReadonlyArray<fileObj> = klawSync(join(__dirname, '..', '..', 'public', 'thumbs'), options);
-		filesOrig.forEach((file, ind) => {
-			if (!filesOrig.find(elem => hasAThumb(elem, thumbsOrig))) {
-				filesOrig[ind].thumbed = false;
+		const filesOrig = paginate(allFiles, page || 1, 10);
+		const thumbsOrig = paginate(allThumbs, page || 1, 10);
+		thumbs = thumbs.slice(9, thumbs.length - 1);
+		alreadyThumbed = false;
+		filesOrig.data.forEach((file, ind) => {
+			if (!filesOrig.data.find(elem => hasAThumb(elem, thumbsOrig.data))) {
+				filesOrig.data[ind].thumbed = false;
 			}
 		});
 		if (!alreadyThumbed) {
-			for (const file of filesOrig) {
+			for (const file of filesOrig.data) {
 				if (!file.thumbed) {
 					let temp: thumbObj = await sharpie(file);
 					thumbs.push(temp);
@@ -102,10 +110,14 @@ function getThumbsForGallery() {
 			}
 			alreadyThumbed = true;
 		}
-		resolve(thumbs);
+		const tores: thumbReturn = {thumbs, pagination: thumbsOrig};
+		resolve(tores);
 	})
 }
-
+interface thumbReturn {
+	thumbs: Array<thumbObj | fileObj>;
+	pagination: any;
+}
 export function sharpie(file: fileObj) {
 	return sharp(file.path)
 		.resize(320, 240)

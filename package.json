@@ -25,6 +25,7 @@
     "multer": "^1.3.0",
     "nedb-core": "^3.0.6",
     "node-sass-middleware": "0.11.0",
+    "paginate-array": "^2.0.0",
     "pug": "2.0.0-rc.4",
     "response-time": "^2.3.2",
     "serve-favicon": "^2.4.5",
@@ -51,6 +52,6 @@
     "concurrently": "^3.5.0",
     "cypress": "^1.0.2",
     "nodemon": "^1.12.1",
-    "typescript": "^2.6.0-dev.20171014"
+    "typescript": "^2.5.3"
   }
 }
