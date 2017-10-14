@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as logger from 'morgan';
 import * as cookieParser from "cookie-parser";
 import * as sassMiddleware from 'node-sass-middleware'
+import * as favicon from 'serve-favicon';
 import * as bodyParser from 'body-parser';
 import {join} from 'path';
 import * as responseTime from 'response-time';
@@ -18,6 +19,7 @@ import img from './routes/img';
 const app: express.Application = express();
 const cacheTime: number = 86400000 * 7;
 
+app.use(favicon(join(__dirname, 'public', 'favicon.ico')));
 app.use((req, res, next) => {
 	res.setHeader('X-Robots-Tag', 'noindex');
 	next();
