@@ -79,7 +79,7 @@ function hasAThumb(filename: fileObj, thumbsOrig: ReadonlyArray<fileObj>) {
 function getThumbsForGallery() {
 	return new Promise<Array<fileObj | thumbObj>>(async resolve => {
 		const date = new Date();
-		const refTime = new Date().setDate(date.getDate() - 1);
+		const refTime = new Date().setDate(date.getDate() - 3);
 		const filterFn = item => item.stats.mtime.getTime() > refTime;
 		const options: klawOpts = {nodir: true, filter: filterFn};
 		const filesOrig: ReadonlyArray<fileObj> = klawSync(join(__dirname, '..', 'uploads'), options);
