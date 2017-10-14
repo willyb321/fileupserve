@@ -12,8 +12,7 @@ let thumbs: Array<thumbObj | fileObj> = [];
 let alreadyThumbed: boolean = false;
 const thumbsPath: string = join(__dirname, '..', '..', 'public', 'thumbs');
 const filesPath: string = join(__dirname, '..', 'uploads');
-const allFiles: ReadonlyArray<fileObj> = klawSync(filesPath, {nodir: true});
-const allThumbs: ReadonlyArray<fileObj> = klawSync(thumbsPath, {nodir: true});
+
 getThumbsForGallery()
 	.then(() => {
 		console.log('main page ready');
@@ -84,6 +83,8 @@ function hasAThumb(filename: fileObj, thumbsOrig: ReadonlyArray<fileObj>) {
 
 function getThumbsForGallery(page?: number) {
 	return new Promise(async resolve => {
+		let allFiles: ReadonlyArray<fileObj> = klawSync(filesPath, {nodir: true});
+		let allThumbs: ReadonlyArray<fileObj> = klawSync(thumbsPath, {nodir: true});
 		const date = new Date();
 		const refTime = new Date().setDate(date.getDate() - 3);
 		const filterFn = item => item.stats.mtime.getTime() > refTime;
