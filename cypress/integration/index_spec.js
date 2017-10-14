@@ -1,4 +1,22 @@
 describe('Upload test', function () {
+	it('Deletes all current images', function () {
+		cy.visit('/')
+			.then(function () {
+				cy.screenshot();
+				const imgs = Cypress.$('.img');
+				for (const i of imgs) {
+					cy.request(Cypress.$(i).parent().attr('href') + '?delete=true')
+						.then(function (response) {
+							expect(response.status).to.eq(200);
+							expect(response.body).to.have.property('deleted');
+							expect(response).to.have.property('headers');
+							expect(response.headers).to.have.property('x-robots-tag', 'noindex');
+							expect(response.headers).to.have.property('x-response-time');
+						})
+				}
+			})
+	});
+
 	it('Should have no images to start', function () {
 		cy.visit('/')
 			.then(function () {
@@ -15,17 +33,17 @@ describe('Upload test', function () {
 				return Cypress.Blob.binaryStringToBlob(img, 'image/png').then(data => {
 					formData.append('imageData', data, 'rss.png');
 					return Cypress.$.ajax({
-						method: 'POST',
-						contentType: false,
-						processData: false,
-						url: '/upload', // baseUrl will be prepended to this url
-						username: 'uploader',
-						password: 'test',
-						xhrFields: {
-							withCredentials: true
-						},
-						data: formData
-					})
+							method: 'POST',
+							contentType: false,
+							processData: false,
+							url: '/upload', // baseUrl will be prepended to this url
+							username: 'uploader',
+							password: 'test',
+							xhrFields: {
+								withCredentials: true
+							},
+							data: formData
+						})
 						.then(data => {
 							expect(data).to.have.property('url');
 							return cy.request(data.url)
