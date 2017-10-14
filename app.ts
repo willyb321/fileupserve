@@ -19,7 +19,7 @@ import img from './routes/img';
 const app: express.Application = express();
 const cacheTime: number = 86400000 * 7;
 
-app.use(favicon(join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(join(__dirname, '..', 'public', 'favicon.ico')));
 app.use((req, res, next) => {
 	res.setHeader('X-Robots-Tag', 'noindex');
 	next();
