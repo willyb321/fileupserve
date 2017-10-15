@@ -2,10 +2,12 @@ extends layout
 
 block content
 	h1= title
-		if pagination.currentPage >= pagination.totaPages
+		if pagination.currentPage > 1
 			a.prev(href="/?page=" + (parseInt(pagination.currentPage) - 1) style="float: left;") Previous page
-		if pagination.currentPage <= pagination.totaPages
-			a.next(href="/?page=" + (parseInt(pagination.currentPage) + 1) style="float: right;") Next page
+		if pagination.currentPage <= pagination.totaPages && pagination.currentPage < pagination.totaPages
+			a.next(href="/?page=" + (parseInt(pagination.currentPage) + 1) style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage) Next page
+		else
+			a.next(style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage)
 	for elem,ind in thumbs
 		if elem
 			.imgfig

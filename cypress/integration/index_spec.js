@@ -3,17 +3,12 @@ describe('Upload test', function () {
 		cy.visit('/')
 			.then(function () {
 				cy.screenshot();
-				const imgs = Cypress.$('.img');
-				for (const i of imgs) {
-					cy.request(Cypress.$(i).parent().attr('href') + '?delete=true')
-						.then(function (response) {
-							expect(response.status).to.eq(200);
-							expect(response.body).to.have.property('deleted');
-							expect(response).to.have.property('headers');
-							expect(response.headers).to.have.property('x-robots-tag', 'noindex');
-							expect(response.headers).to.have.property('x-response-time');
-						})
-				}
+				let next = Cypress.$('.next');
+				let pages = parseInt(next.attr('data-total-pages'))
+				let imgs = Cypress.$('.img');
+				console.log(next.attr('data-total-pages'))
+				let i = 0;
+				let fin = cy.check(false);
 			})
 	});
 
