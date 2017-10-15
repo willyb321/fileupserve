@@ -6,6 +6,7 @@ import * as sharp from 'sharp';
 import * as basicAuth from "express-basic-auth";
 import * as fs from 'fs-extra';
 import * as paginate from 'paginate-array';
+import * as _ from 'lodash';
 
 const router: express.Router = express.Router();
 let thumbs: Array<thumbObj | fileObj> = [];
@@ -85,10 +86,12 @@ function getThumbsForGallery(page?: number) {
 	return new Promise(async resolve => {
 		let allFiles: ReadonlyArray<fileObj> = klawSync(filesPath, {nodir: true});
 		let allThumbs: ReadonlyArray<fileObj> = klawSync(thumbsPath, {nodir: true});
+		let allThumbsSorted = _.cloneDeep(allThumbs).sort((a,b) => b.stats.mtime.getTime() > a.stats.mtime.getTime())
+		let allFilesSorted = _.cloneDeep(allFiles).sort((a,b) => b.stats.mtime.getTime() > a.stats.mtime.getTime())
 		const date = new Date();
+		allThumbs = allThumbsSorted;
+		allFiles = allFilesSorted;
 		const refTime = new Date().setDate(date.getDate() - 3);
-		const filterFn = item => item.stats.mtime.getTime() > refTime;
-		const options: klawOpts = {nodir: true, filter: filterFn};
 		const filesOrig = paginate(allFiles, page || 1, 10);
 		const thumbsOrig = paginate(allThumbs, page || 1, 10);
 		thumbs = thumbs.slice(9, thumbs.length - 1);
