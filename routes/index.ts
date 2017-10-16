@@ -86,8 +86,8 @@ function getThumbsForGallery(page?: number) {
 	return new Promise(async resolve => {
 		let allFiles: ReadonlyArray<fileObj> = klawSync(filesPath, {nodir: true});
 		let allThumbs: ReadonlyArray<fileObj> = klawSync(thumbsPath, {nodir: true});
-		let allThumbsSorted = _.cloneDeep(allThumbs).sort((a,b) => b.stats.mtime.getTime() > a.stats.mtime.getTime())
-		let allFilesSorted = _.cloneDeep(allFiles).sort((a,b) => b.stats.mtime.getTime() > a.stats.mtime.getTime())
+		let allThumbsSorted = _.cloneDeep(allThumbs).sort((a,b) => a.stats.mtime.getTime() < b.stats.mtime.getTime())
+		let allFilesSorted = _.cloneDeep(allFiles).sort((a,b) => a.stats.mtime.getTime() < b.stats.mtime.getTime())
 		const date = new Date();
 		allThumbs = allThumbsSorted;
 		allFiles = allFilesSorted;
