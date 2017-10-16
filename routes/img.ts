@@ -30,8 +30,13 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 			})
 			.catch(err => {
 				console.log(err);
-				res.status(500);
-				res.end();
+				if (!err) {
+					res.status(404);
+					res.end();
+				} else {
+					res.status(500);
+					res.end();
+				}
 			})
 	}
 });
@@ -51,7 +56,7 @@ router.get('/:id', basicAuth({
 				res.end();
 			} else {
 				if (fs.existsSync(data.doc.path)) {
-					removeImg(data.doc._id)
+					removeImg(data.doc.imgId)
 						.then(deleted => {
 							fs.unlinkSync(data.doc.path);
 							if (fs.existsSync(join(__dirname, '..', '..', 'public', 'thumbs', data.doc.filename))) {
@@ -63,8 +68,10 @@ router.get('/:id', basicAuth({
 							res.json({deleted: deleted});
 						}).catch(err => {
 						console.log(err);
-						res.status(500);
-						res.end();
+						if (err) {
+							res.status(500);
+							res.end();
+						}
 					})
 				}
 			}

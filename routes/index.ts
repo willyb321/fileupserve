@@ -7,9 +7,11 @@ import * as basicAuth from "express-basic-auth";
 import * as fs from 'fs-extra';
 import * as paginate from 'paginate-array';
 import * as _ from 'lodash';
+import {getAllThumbs, insertThumb} from "./dbutils";
+import * as mongoose from "mongoose";
 
 const router: express.Router = express.Router();
-let thumbs: Array<thumbObj | fileObj> = [];
+let thumbs = [];
 let alreadyThumbed: boolean = false;
 const thumbsPath: string = join(__dirname, '..', '..', 'public', 'thumbs');
 const filesPath: string = join(__dirname, '..', 'uploads');
@@ -59,7 +61,7 @@ export async function newUpload(filename: string) {
 	alreadyThumbed = true;
 }
 
-interface thumbObj extends sharp.OutputInfo {
+export interface thumbObj extends sharp.OutputInfo, mongoose.Document {
 	path: string;
 	properURL: string;
 	filePath: string;
@@ -84,17 +86,18 @@ function hasAThumb(filename: fileObj, thumbsOrig: ReadonlyArray<fileObj>) {
 
 function getThumbsForGallery(page?: number) {
 	return new Promise(async resolve => {
+		let thumbs = [];
 		let allFiles: ReadonlyArray<fileObj> = klawSync(filesPath, {nodir: true});
 		let allThumbs: ReadonlyArray<fileObj> = klawSync(thumbsPath, {nodir: true});
-		let allThumbsSorted = _.cloneDeep(allThumbs).sort((a,b) => a.stats.mtime.getTime() < b.stats.mtime.getTime())
-		let allFilesSorted = _.cloneDeep(allFiles).sort((a,b) => a.stats.mtime.getTime() < b.stats.mtime.getTime())
+		let allThumbsSorted = _.cloneDeep(allThumbs).sort((a,b) => a.stats.mtime.getUTCMilliseconds() > b.stats.mtime.getUTCMilliseconds());
+		let allFilesSorted = _.cloneDeep(allFiles).sort((a,b) => a.stats.mtime.getUTCMilliseconds() > b.stats.mtime.getUTCMilliseconds());
 		const date = new Date();
 		allThumbs = allThumbsSorted;
 		allFiles = allFilesSorted;
 		const refTime = new Date().setDate(date.getDate() - 3);
 		const filesOrig = paginate(allFiles, page || 1, 10);
 		const thumbsOrig = paginate(allThumbs, page || 1, 10);
-		thumbs = thumbs.slice(9, thumbs.length - 1);
+		// thumbs = thumbs.slice(9, thumbs.length - 1);
 		alreadyThumbed = false;
 		filesOrig.data.forEach((file, ind) => {
 			if (!filesOrig.data.find(elem => hasAThumb(elem, thumbsOrig.data))) {
@@ -118,7 +121,7 @@ function getThumbsForGallery(page?: number) {
 		resolve(tores);
 	})
 }
-interface thumbReturn {
+export interface thumbReturn {
 	thumbs: Array<thumbObj | fileObj>;
 	pagination: any;
 }
