@@ -7,7 +7,7 @@ import * as basicAuth from "express-basic-auth";
 import * as fs from 'fs-extra';
 import * as paginate from 'paginate-array';
 import * as _ from 'lodash';
-import {getAllThumbs, insertThumb} from "./dbutils";
+import {dbDoc, getAllImgs, insertThumb, dbDocModel, db} from "./dbutils";
 import * as mongoose from "mongoose";
 import * as crypto from 'crypto';
 
@@ -111,7 +111,7 @@ export function proxyImg(url) {
 	const path = `/${resizing_type}/${width}/${height}/${gravity}/${enlarge}/${encoded_url}.${extension}`;
 
 	const signature = sign(SALT, path, KEY);
-	console.log(`${process.env.IMGPROXY_URL || '/'}${signature}${path}`);
+	// console.log(`${process.env.IMGPROXY_URL || '/'}${signature}${path}`);
 	return `${process.env.IMGPROXY_URL || '/'}${signature}${path}`;
 }
 
@@ -133,6 +133,20 @@ function getThumbsForGallery(page?: number) {
 			}
 			alreadyThumbed = true;
 		}
+		getAllImgs()
+			.then((data: dbDoc[]) => {
+				for (const i in data) {
+					data[i].properURL = `/i/${parse(data[i].path).base}`;
+					data[i].path = proxyImg(data[i].properURL);
+					const updated = new dbDocModel(data[i]);
+					dbDocModel.findOneAndUpdate({imgId: data[i].imgId}, updated, (err, doc) => {
+						if (err) {
+							console.log(err);
+						}
+					})
+				}
+				filesOrig.data = data;
+			});
 		const tores: thumbReturn = {thumbs: filesOrig, pagination: filesOrig};
 		resolve(tores);
 	})

@@ -14,14 +14,20 @@ interface addedData {
 	url: string;
 	deleteURL: string;
 }
-
+interface file extends Express.Multer.File {
+	properURL: string;
+}
+interface Request extends express.Request {
+	file: file;
+}
 router.post('/', basicAuth({
 	users: {
 		uploader: (process.env.FILEUPSERVE_PW || 'test')
 	},
 	challenge: true
-}), upload.single('imageData'), (req: express.Request, res: express.Response) => {
+}), upload.single('imageData'), (req: Request, res: express.Response) => {
 	if (req.file) {
+		req.file.properURL = `/i/${req.file.filename}`;
 		insertImg(req.file)
 			.then((data: checkDB) => {
 				if (data.exists === true) {

@@ -18,7 +18,8 @@ const dbDocSchema = new mongoose.Schema({
 	imgId: String,
 	filename: String,
 	path: String,
-	mimetype: String
+	mimetype: String,
+	properURL: String
 });
 
 const thumbSchema = new mongoose.Schema({
@@ -31,7 +32,7 @@ const thumbSchema = new mongoose.Schema({
 	height: Number,
 	channels: Number,
 });
-const dbDocModel = mongoose.model('Img', dbDocSchema);
+export const dbDocModel = mongoose.model('Img', dbDocSchema);
 const thumbModel = mongoose.model('Thumb', thumbSchema);
 
 export interface checkThumb {
@@ -44,6 +45,7 @@ export interface dbDoc extends mongoose.Document {
 	filename: string;
 	path: string;
 	mimetype: string;
+	properURL: string;
 }
 
 /**
@@ -51,8 +53,8 @@ export interface dbDoc extends mongoose.Document {
  * @param {object} info - multer file object.
  * @returns {Promise.<object>} - The doc and also whether it was inserted.
  */
-export function insertImg(info: Express.Multer.File) {
-	const {filename, path, mimetype} = info;
+export function insertImg(info) {
+	const {filename, path, mimetype, properURL} = info;
 	return new Promise<checkDB>(async (resolve, reject) => {
 		const already: checkDB = await imageInDB(filename);
 		if (already.exists) {
@@ -62,6 +64,7 @@ export function insertImg(info: Express.Multer.File) {
 				imgId: filename,
 				filename,
 				path,
+				properURL,
 				mimetype
 			});
 			toInsert.save()
@@ -75,8 +78,8 @@ export function insertImg(info: Express.Multer.File) {
 	})
 }
 
-export function getAllThumbs() {
-	return thumbModel.find({})
+export function getAllImgs() {
+	return dbDocModel.find({}).sort({_id: -1})
 }
 
 /**
