@@ -4,7 +4,7 @@ import {join} from 'path';
 import {insertImg, checkDB, db} from './dbutils';
 import * as basicAuth from 'express-basic-auth';
 import * as multer from 'multer';
-import {newUpload} from './index';
+import {newUpload, proxyImg} from './index';
 
 const router = express.Router();
 const upload = multer({dest: join(__dirname, '..', 'uploads')});
@@ -16,6 +16,7 @@ interface addedData {
 }
 interface file extends Express.Multer.File {
 	properURL: string;
+	thumbPath: string;
 }
 interface Request extends express.Request {
 	file: file;
@@ -28,6 +29,7 @@ router.post('/', basicAuth({
 }), upload.single('imageData'), (req: Request, res: express.Response) => {
 	if (req.file) {
 		req.file.properURL = `/i/${req.file.filename}`;
+		req.file.thumbPath = proxyImg(req.file.properURL);
 		insertImg(req.file)
 			.then((data: checkDB) => {
 				if (data.exists === true) {
