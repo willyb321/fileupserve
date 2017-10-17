@@ -93,9 +93,8 @@ export function proxyImg(url) {
 	const urlSafeBase64 = (string) => {
 		return new Buffer(string).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
 	};
-
 	const hexDecode = (hex) => Buffer.from(hex, 'hex');
-
+	url = `${process.env.DOMAIN || 'http://localhost:3000'}${url}`;
 	const sign = (salt, target, secret) => {
 		const hmac = crypto.createHmac('sha256', hexDecode(secret));
 		hmac.update(hexDecode(salt));
