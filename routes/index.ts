@@ -33,14 +33,14 @@ getThumbsForGallery()
 			getThumbsForGallery(page)
 				.then((thumbs: thumbReturn) => {
 					let captions = [];
-					for (const i of thumbs.thumbs) {
+					for (const i of thumbs.thumbs.data) {
 						if (i) {
 							const urlcap = `${req.get('X-Forwarded-Proto') || req.protocol}://${req.get('X-Forwarded-Host') || req.get('host')}/i/${parse(i.path).base}`;
 							captions.push(urlcap)
 						}
 					}
 					res.render('index', {
-						thumbs: thumbs.thumbs,
+						thumbs: thumbs.pagination,
 						captions,
 						pagination: thumbs.pagination,
 						title: 'Images and stuff'
@@ -116,17 +116,12 @@ export function proxyImg(url) {
 
 function getThumbsForGallery(page?: number) {
 	return new Promise(async resolve => {
-		let thumbs = [];
 		let allFiles: ReadonlyArray<fileObj> = klawSync(filesPath, {nodir: true});
-		let allThumbs: ReadonlyArray<fileObj> = klawSync(thumbsPath, {nodir: true});
-		let allThumbsSorted = _.cloneDeep(allThumbs).sort((a,b) => a.stats.mtime.getUTCMilliseconds() > b.stats.mtime.getUTCMilliseconds());
-		let allFilesSorted = _.cloneDeep(allFiles).sort((a,b) => a.stats.mtime.getUTCMilliseconds() > b.stats.mtime.getUTCMilliseconds());
+		let allFilesSorted = _.cloneDeep(allFiles).sort((a,b) => a.stats.mtime.getUTCMilliseconds() < b.stats.mtime.getUTCMilliseconds());
 		const date = new Date();
-		allThumbs = allThumbsSorted;
 		allFiles = allFilesSorted;
 		const refTime = new Date().setDate(date.getDate() - 3);
 		const filesOrig = paginate(allFiles, page || 1, 10);
-		const thumbsOrig = paginate(allThumbs, page || 1, 10);
 		// thumbs = thumbs.slice(9, thumbs.length - 1);
 		alreadyThumbed = false;
 		filesOrig.data.forEach((file, ind) => {
@@ -147,12 +142,14 @@ function getThumbsForGallery(page?: number) {
 			}
 			alreadyThumbed = true;
 		}
-		const tores: thumbReturn = {thumbs, pagination: thumbsOrig};
+		const tores: thumbReturn = {thumbs: filesOrig, pagination: filesOrig};
 		resolve(tores);
 	})
 }
 export interface thumbReturn {
-	thumbs: Array<thumbObj | fileObj>;
+	thumbs: {
+		data: Array<thumbObj | fileObj>;
+	}
 	pagination: any;
 }
 export function sharpie(info: fileObj) {

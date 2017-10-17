@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import {thumbObj} from "./index";
 
-mongoose.connect(process.env.MONGO_URL);
+mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/imgs');
 // const db = new Datastore({filename: require('path').join(__dirname, 'imgDb.db'), autoload: true});
 export const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
