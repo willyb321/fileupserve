@@ -117,39 +117,22 @@ export function proxyImg(url) {
 
 function getThumbsForGallery(page?: number) {
 	return new Promise(async resolve => {
-		let allFiles: ReadonlyArray<fileObj> = klawSync(filesPath, {nodir: true});
-		let allFilesSorted = _.cloneDeep(allFiles).sort((a, b) => a.stats.mtime.getUTCMilliseconds() < b.stats.mtime.getUTCMilliseconds());
-		const date = new Date();
-		allFiles = allFilesSorted;
-		const refTime = new Date().setDate(date.getDate() - 3);
-		let filesOrig = paginate(allFiles, page || 1, 10);
-		// thumbs = thumbs.slice(9, thumbs.length - 1);
+		let filesOrig;
 		alreadyThumbed = false;
-		if (!alreadyThumbed) {
-			for (const file of filesOrig.data) {
-				file.properURL = `/i/${parse(file.path).base}`;
-				file.thumbPath = proxyImg(file.properURL);
-				thumbs.push(file);
-			}
-			alreadyThumbed = true;
-		}
-		getAllImgs()
-			.then((data: dbDoc[]) => {
-				for (const i in data) {
-					data[i].path = join(filesPath, data[i].imgId);
-					data[i].properURL = `/i/${parse(data[i].path).base}`;
-					data[i].thumbPath = proxyImg(data[i].properURL);
-					const updated = new dbDocModel(data[i]);
-					console.log(data[i])
-					dbDocModel.findOneAndUpdate({imgId: data[i].imgId}, updated, (err, doc) => {
-						if (err) {
-							console.log(err);
-						}
-					})
+
+		const data: any = await getAllImgs();
+		for (const i in data) {
+			data[i].path = join(filesPath, data[i].imgId);
+			data[i].properURL = `/i/${parse(data[i].path).base}`;
+			data[i].thumbPath = proxyImg(data[i].properURL);
+			const updated = new dbDocModel(data[i]);
+			dbDocModel.findOneAndUpdate({imgId: data[i].imgId}, updated, (err, doc) => {
+				if (err) {
+					console.log(err);
 				}
-				filesOrig = paginate(data, page || 1, 10);
-				console.log(filesOrig)
-			});
+			})
+		}
+		filesOrig = paginate(data, page || 1, 10);
 		const tores: thumbReturn = {thumbs: filesOrig, pagination: filesOrig};
 		resolve(tores);
 	})
