@@ -137,7 +137,7 @@ function getThumbsForGallery(page?: number) {
 			.then((data: dbDoc[]) => {
 				for (const i in data) {
 					data[i].properURL = `/i/${parse(data[i].path).base}`;
-					data[i].path = proxyImg(data[i].properURL);
+					data[i].thumbPath = proxyImg(data[i].properURL);
 					const updated = new dbDocModel(data[i]);
 					dbDocModel.findOneAndUpdate({imgId: data[i].imgId}, updated, (err, doc) => {
 						if (err) {

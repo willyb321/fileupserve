@@ -19,7 +19,8 @@ const dbDocSchema = new mongoose.Schema({
 	filename: String,
 	path: String,
 	mimetype: String,
-	properURL: String
+	properURL: String,
+	thumbPath: String
 });
 
 const thumbSchema = new mongoose.Schema({
@@ -46,6 +47,7 @@ export interface dbDoc extends mongoose.Document {
 	path: string;
 	mimetype: string;
 	properURL: string;
+	thumbPath: string;
 }
 
 /**
