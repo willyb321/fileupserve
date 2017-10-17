@@ -9,12 +9,15 @@ import * as paginate from 'paginate-array';
 import * as _ from 'lodash';
 import {getAllThumbs, insertThumb} from "./dbutils";
 import * as mongoose from "mongoose";
+import * as crypto from 'crypto';
 
 const router: express.Router = express.Router();
 let thumbs = [];
 let alreadyThumbed: boolean = false;
 const thumbsPath: string = join(__dirname, '..', '..', 'public', 'thumbs');
 const filesPath: string = join(__dirname, '..', 'uploads');
+const KEY = process.env.IMGPROXY_KEY;
+const SALT = process.env.IMGPROXY_SALT;
 
 getThumbsForGallery()
 	.then(() => {
@@ -84,6 +87,33 @@ function hasAThumb(filename: fileObj, thumbsOrig: ReadonlyArray<fileObj>) {
 	return false;
 }
 
+export function proxyImg(url) {
+	const urlSafeBase64 = (string) => {
+		return new Buffer(string).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
+	};
+
+	const hexDecode = (hex) => Buffer.from(hex, 'hex');
+
+	const sign = (salt, target, secret) => {
+		const hmac = crypto.createHmac('sha256', hexDecode(secret));
+		hmac.update(hexDecode(salt));
+		hmac.update(target);
+		return urlSafeBase64(hmac.digest())
+	};
+	const resizing_type = 'fill';
+	const width = 320;
+	const height = 240;
+	const gravity = 'no';
+	const enlarge = 1;
+	const extension = 'png';
+	const encoded_url = urlSafeBase64(url);
+	const path = `/${resizing_type}/${width}/${height}/${gravity}/${enlarge}/${encoded_url}.${extension}`;
+
+	const signature = sign(SALT, path, KEY);
+	console.log(`${process.env.IMGPROXY_URL || '/'}${signature}${path}`);
+	return `${process.env.IMGPROXY_URL || '/'}${signature}${path}`;
+}
+
 function getThumbsForGallery(page?: number) {
 	return new Promise(async resolve => {
 		let thumbs = [];
@@ -107,11 +137,11 @@ function getThumbsForGallery(page?: number) {
 		if (!alreadyThumbed) {
 			for (const file of filesOrig.data) {
 				if (!file.thumbed) {
-					let temp: thumbObj = await sharpie(file);
+					let temp: fileObj = sharpie(file);
 					thumbs.push(temp);
 				} else {
-					file.path = `/thumbs/${parse(file.path).base}`;
 					file.properURL = `/i/${parse(file.path).base}`;
+					file.path = proxyImg(file.properURL);
 					thumbs.push(file);
 				}
 			}
@@ -125,20 +155,11 @@ export interface thumbReturn {
 	thumbs: Array<thumbObj | fileObj>;
 	pagination: any;
 }
-export function sharpie(file: fileObj) {
-	return sharp(file.path)
-		.resize(320, 240)
-		.toFile(join(thumbsPath, parse(file.path).base))
-		.then((info: thumbObj) => {
-			info.path = `/thumbs/${parse(file.path).base}`;
-			info.properURL = `/i/${parse(file.path).base}`;
-			info.filePath = join(thumbsPath, parse(file.path).base);
-			return info;
-		})
-		.catch(err => {
-			console.log(err);
-			return err;
-		})
+export function sharpie(info: fileObj) {
+	info.filePath = info.path;
+	info.properURL = `/i/${parse(info.filePath).base}`;
+	info.path = proxyImg(info.properURL);
+	return info;
 }
 
 export default router;
