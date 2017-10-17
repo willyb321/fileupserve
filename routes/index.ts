@@ -69,11 +69,13 @@ export interface thumbObj extends sharp.OutputInfo, mongoose.Document {
 	properURL: string;
 	filePath: string;
 }
+
 interface fileObj extends klawSync.Item {
 	thumbed?: boolean;
 	properURL?: string;
 	filePath?: string;
 }
+
 interface klawOpts extends klawSync.Options {
 	filter: any;
 }
@@ -117,28 +119,18 @@ export function proxyImg(url) {
 function getThumbsForGallery(page?: number) {
 	return new Promise(async resolve => {
 		let allFiles: ReadonlyArray<fileObj> = klawSync(filesPath, {nodir: true});
-		let allFilesSorted = _.cloneDeep(allFiles).sort((a,b) => a.stats.mtime.getUTCMilliseconds() < b.stats.mtime.getUTCMilliseconds());
+		let allFilesSorted = _.cloneDeep(allFiles).sort((a, b) => a.stats.mtime.getUTCMilliseconds() < b.stats.mtime.getUTCMilliseconds());
 		const date = new Date();
 		allFiles = allFilesSorted;
 		const refTime = new Date().setDate(date.getDate() - 3);
 		const filesOrig = paginate(allFiles, page || 1, 10);
 		// thumbs = thumbs.slice(9, thumbs.length - 1);
 		alreadyThumbed = false;
-		filesOrig.data.forEach((file, ind) => {
-			if (!filesOrig.data.find(elem => hasAThumb(elem, thumbsOrig.data))) {
-				filesOrig.data[ind].thumbed = false;
-			}
-		});
 		if (!alreadyThumbed) {
 			for (const file of filesOrig.data) {
-				if (!file.thumbed) {
-					let temp: fileObj = sharpie(file);
-					thumbs.push(temp);
-				} else {
-					file.properURL = `/i/${parse(file.path).base}`;
-					file.path = proxyImg(file.properURL);
-					thumbs.push(file);
-				}
+				file.properURL = `/i/${parse(file.path).base}`;
+				file.path = proxyImg(file.properURL);
+				thumbs.push(file);
 			}
 			alreadyThumbed = true;
 		}
@@ -146,12 +138,14 @@ function getThumbsForGallery(page?: number) {
 		resolve(tores);
 	})
 }
+
 export interface thumbReturn {
 	thumbs: {
 		data: Array<thumbObj | fileObj>;
 	}
 	pagination: any;
 }
+
 export function sharpie(info: fileObj) {
 	info.filePath = info.path;
 	info.properURL = `/i/${parse(info.filePath).base}`;
