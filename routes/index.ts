@@ -7,14 +7,12 @@ import * as basicAuth from "express-basic-auth";
 import * as fs from 'fs-extra';
 import * as paginate from 'paginate-array';
 import * as _ from 'lodash';
-import {dbDoc, getAllImgs, insertThumb, dbDocModel, db} from "./dbutils";
+import {getAllImgs, dbDocModel} from "./dbutils";
 import * as mongoose from "mongoose";
 import * as crypto from 'crypto';
 
 const router: express.Router = express.Router();
 let thumbs = [];
-let alreadyThumbed: boolean = false;
-const thumbsPath: string = join(__dirname, '..', '..', 'public', 'thumbs');
 const filesPath: string = join(__dirname, '..', 'uploads');
 const KEY = process.env.IMGPROXY_KEY;
 const SALT = process.env.IMGPROXY_SALT;
@@ -50,20 +48,6 @@ getThumbsForGallery()
 
 	});
 
-export function fileRemoved(path: string) {
-	const index = thumbs.findIndex(elem => (elem && elem.filePath === path));
-	thumbs.splice(index, 1)
-}
-
-export async function newUpload(filename: string) {
-	console.log(`filename provided: ${filename}`);
-	const fileStats = await fs.stat(filename);
-	const updated = await sharpie({path: filename, stats: fileStats});
-
-	thumbs.push(updated);
-	alreadyThumbed = true;
-}
-
 export interface thumbObj extends sharp.OutputInfo, mongoose.Document {
 	path: string;
 	properURL: string;
@@ -74,19 +58,6 @@ interface fileObj extends klawSync.Item {
 	thumbed?: boolean;
 	properURL?: string;
 	filePath?: string;
-}
-
-interface klawOpts extends klawSync.Options {
-	filter: any;
-}
-
-function hasAThumb(filename: fileObj, thumbsOrig: ReadonlyArray<fileObj>) {
-	for (const i of thumbsOrig) {
-		if (filename && i && i.path === filename.path) {
-			return true;
-		}
-	}
-	return false;
 }
 
 export function proxyImg(url) {
@@ -111,26 +82,26 @@ export function proxyImg(url) {
 	const path = `/${resizing_type}/${width}/${height}/${gravity}/${enlarge}/${encoded_url}.${extension}`;
 
 	const signature = sign(SALT, path, KEY);
-	// console.log(`${process.env.IMGPROXY_URL || '/'}${signature}${path}`);
 	return `${process.env.IMGPROXY_URL || '/'}${signature}${path}`;
 }
 
 function getThumbsForGallery(page?: number) {
 	return new Promise(async resolve => {
 		let filesOrig;
-		alreadyThumbed = false;
-
 		const data: any = await getAllImgs();
 		for (const i in data) {
-			data[i].path = join(filesPath, data[i].imgId);
-			data[i].properURL = `/i/${parse(data[i].path).base}`;
-			data[i].thumbPath = proxyImg(data[i].properURL);
-			const updated = new dbDocModel(data[i]);
-			dbDocModel.findOneAndUpdate({imgId: data[i].imgId}, updated, (err, doc) => {
-				if (err) {
-					console.log(err);
-				}
-			})
+			if (data.hasOwnProperty(i)) {
+				data[i].path = join(filesPath, data[i].imgId);
+				data[i].properURL = `/i/${parse(data[i].path).base}`;
+				data[i].thumbPath = proxyImg(data[i].properURL);
+				const updated = new dbDocModel(data[i]);
+				dbDocModel.findOneAndUpdate({imgId: data[i].imgId}, updated)
+					.catch(err => {
+						if (err) {
+							console.log(err);
+						}
+					})
+			}
 		}
 		filesOrig = paginate(data, page || 1, 10);
 		const tores: thumbReturn = {thumbs: filesOrig, pagination: filesOrig};

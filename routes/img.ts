@@ -1,10 +1,8 @@
 ///<reference path="../node_modules/@types/node/index.d.ts"/>
-import * as express from "express";
+import * as express from 'express';
 import {getImg, checkDB, removeImg} from './dbutils'
 import * as fs from 'fs-extra';
-import * as basicAuth from "express-basic-auth";
-import {join} from "path";
-import {fileRemoved} from "./index";
+import * as basicAuth from 'express-basic-auth';
 
 const router = express.Router();
 
@@ -59,11 +57,6 @@ router.get('/:id', basicAuth({
 					removeImg(data.doc.imgId)
 						.then(deleted => {
 							fs.unlinkSync(data.doc.path);
-							if (fs.existsSync(join(__dirname, '..', '..', 'public', 'thumbs', data.doc.filename))) {
-								fs.unlinkSync(join(__dirname, '..', '..', 'public', 'thumbs', data.doc.filename));
-								const path = join(__dirname, '..', '..', 'public', 'thumbs', data.doc.filename);
-								fileRemoved(path);
-							}
 							res.status(200);
 							res.json({deleted: deleted});
 						}).catch(err => {

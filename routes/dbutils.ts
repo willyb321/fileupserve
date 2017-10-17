@@ -6,7 +6,7 @@ mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/imgs');
 export const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
-	console.log('Connected1')
+	console.log('Connected!')
 });
 
 export interface checkDB {
@@ -23,18 +23,7 @@ const dbDocSchema = new mongoose.Schema({
 	thumbPath: String
 });
 
-const thumbSchema = new mongoose.Schema({
-	path: String,
-	properURL: String,
-	filePath: String,
-	format: String,
-	size: Number,
-	width: Number,
-	height: Number,
-	channels: Number,
-});
 export const dbDocModel = mongoose.model('Img', dbDocSchema);
-const thumbModel = mongoose.model('Thumb', thumbSchema);
 
 export interface checkThumb {
 	exists: boolean;
@@ -83,39 +72,6 @@ export function insertImg(info) {
 
 export function getAllImgs() {
 	return dbDocModel.find({}).sort({_id: -1})
-}
-
-/**
- * Insert thumbnail info.
- * @param {thumbObj} info
- * @returns {Promise<checkDB>}
- */
-export function insertThumb(info: thumbObj) {
-	return new Promise<checkThumb>(async (resolve, reject) => {
-		thumbModel.findOne(info)
-			.then((res: thumbObj) => {
-				if (res) {
-					console.log(res);
-					const doc: checkThumb = {exists: true, doc: res};
-					resolve(doc)
-				} else {
-					const toInsert = new thumbModel(info);
-					toInsert.save({}, function (err, newDoc: dbDoc) {
-						if (err) {
-							reject(err);
-						} else {
-							const doc: checkThumb = {exists: true, doc: res};
-							resolve(doc)
-						}
-					});
-				}
-			})
-			.catch(err => {
-				if (err) {
-					reject(err);
-				}
-			});
-	})
 }
 
 /**
