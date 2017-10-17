@@ -33,14 +33,14 @@ getThumbsForGallery()
 			getThumbsForGallery(page)
 				.then((thumbs: thumbReturn) => {
 					let captions = [];
-					for (const i of thumbs.thumbs.data) {
+					for (const i of thumbs.pagination.data) {
 						if (i) {
 							const urlcap = `${req.get('X-Forwarded-Proto') || req.protocol}://${req.get('X-Forwarded-Host') || req.get('host')}${i.properURL}`;
 							captions.push(urlcap)
 						}
 					}
 					res.render('index', {
-						thumbs: thumbs.pagination,
+						thumbs: thumbs.thumbs.data,
 						captions,
 						pagination: thumbs.pagination,
 						title: 'Images and stuff'
@@ -122,13 +122,13 @@ function getThumbsForGallery(page?: number) {
 		const date = new Date();
 		allFiles = allFilesSorted;
 		const refTime = new Date().setDate(date.getDate() - 3);
-		const filesOrig = paginate(allFiles, page || 1, 10);
+		let filesOrig = paginate(allFiles, page || 1, 10);
 		// thumbs = thumbs.slice(9, thumbs.length - 1);
 		alreadyThumbed = false;
 		if (!alreadyThumbed) {
 			for (const file of filesOrig.data) {
 				file.properURL = `/i/${parse(file.path).base}`;
-				file.path = proxyImg(file.properURL);
+				file.thumbPath = proxyImg(file.properURL);
 				thumbs.push(file);
 			}
 			alreadyThumbed = true;
@@ -136,16 +136,19 @@ function getThumbsForGallery(page?: number) {
 		getAllImgs()
 			.then((data: dbDoc[]) => {
 				for (const i in data) {
+					data[i].path = join(filesPath, data[i].imgId);
 					data[i].properURL = `/i/${parse(data[i].path).base}`;
 					data[i].thumbPath = proxyImg(data[i].properURL);
 					const updated = new dbDocModel(data[i]);
+					console.log(data[i])
 					dbDocModel.findOneAndUpdate({imgId: data[i].imgId}, updated, (err, doc) => {
 						if (err) {
 							console.log(err);
 						}
 					})
 				}
-				filesOrig.data = data;
+				filesOrig = paginate(data, page || 1, 10);
+				console.log(filesOrig)
 			});
 		const tores: thumbReturn = {thumbs: filesOrig, pagination: filesOrig};
 		resolve(tores);

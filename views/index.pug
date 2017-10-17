@@ -8,7 +8,7 @@ block content
 			a.next(href="/?page=" + (parseInt(pagination.currentPage) + 1) style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage) Next page
 		else
 			a.next(style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage)
-	for elem,ind in thumbs.data
+	for elem,ind in thumbs
 		if elem
 			.imgfig
 				figure.fig
