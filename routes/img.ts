@@ -31,9 +31,7 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 						.then(function (metadata) {
 							if (metadata.width < 510 || metadata.height < 56) {
 								return image
-									.resize(510 * 2, 56 * 2)
 									.webp()
-									.overlayWith(join(__dirname, '..', '..', 'public', 'netneutrality.png'), { gravity: sharp.gravity.south })
 									.toBuffer();
 							}
 							return image
