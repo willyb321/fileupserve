@@ -3,6 +3,8 @@ import * as express from 'express';
 import {getImg, checkDB, removeImg} from './dbutils'
 import * as fs from 'fs-extra';
 import * as basicAuth from 'express-basic-auth';
+import * as sharp from 'sharp';
+import {join} from 'path';
 
 const router = express.Router();
 
@@ -23,7 +25,12 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 						dotfiles: 'deny',
 						maxAge: 86400000 * 7
 					};
-					res.sendFile(data.doc.path, resOpts);
+					sharp(data.doc.path)
+					.overlayWith(join(__dirname, '..', '..', 'public', 'netneutrality.png'), {gravity: sharp.gravity.south})
+					.toBuffer()
+					.then(function(outputBuffer) {
+						res.send(outputBuffer.toString('base64'));
+					});
 				}
 			})
 			.catch(err => {
