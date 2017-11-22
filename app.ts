@@ -7,6 +7,7 @@ import * as bodyParser from 'body-parser';
 import {join} from 'path';
 import * as responseTime from 'response-time';
 import * as fs from 'fs-extra';
+import 'source-map-support/register';
 
 fs.ensureDirSync(join(__dirname, '..', 'public', 'thumbs'));
 fs.ensureDirSync(join(__dirname, 'uploads'));
@@ -15,6 +16,13 @@ import index from './routes/index';
 import upload from './routes/upload';
 import img from './routes/img';
 
+process.on('uncaughtException', (err: Error) => {
+	console.log(err);
+});
+
+process.on('unhandledRejection', (err: Error) => {
+	console.log(err);
+});
 
 const app: express.Application = express();
 const cacheTime: number = 86400000 * 7;
