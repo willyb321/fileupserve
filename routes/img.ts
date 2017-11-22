@@ -38,6 +38,7 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 								return image
 									.webp()
 									.overlayWith(join(__dirname, '..', '..', 'public', 'sorrynotsorry.png'))
+									.toBuffer();
 							}
 							return image
 								.webp()
