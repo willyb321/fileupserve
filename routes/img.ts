@@ -1,10 +1,10 @@
 ///<reference path="../node_modules/@types/node/index.d.ts"/>
 import * as express from 'express';
-import {getImg, checkDB, removeImg} from './dbutils'
+import { getImg, checkDB, removeImg } from './dbutils'
 import * as fs from 'fs-extra';
 import * as basicAuth from 'express-basic-auth';
 import * as sharp from 'sharp';
-import {join} from 'path';
+import { join } from 'path';
 
 const router = express.Router();
 
@@ -25,16 +25,27 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 						dotfiles: 'deny',
 						maxAge: 86400000 * 7
 					};
-					sharp(data.doc.path)
-					.resize(520, 56)
-					.min()
-					.overlayWith(join(__dirname, '..', '..', 'public', 'netneutrality.png'), {gravity: sharp.gravity.south})
-					.toBuffer()
-					.then(function(outputBuffer) {
-						res.write(outputBuffer, 'binary');
-						res.end(null, 'binary');
-
-					});
+					const image = sharp(data.doc.path);
+					image
+						.metadata()
+						.then(function (metadata) {
+							if (metadata.width < 510 || metadata.height < 56) {
+								return image
+									.resize(510 * 2, 56 * 2)
+									.webp()
+									.overlayWith(join(__dirname, '..', '..', 'public', 'netneutrality.png'), { gravity: sharp.gravity.south })
+									.toBuffer();
+							}
+							return image
+								.resize(Math.round(metadata.width / 2))
+								.webp()
+								.overlayWith(join(__dirname, '..', '..', 'public', 'netneutrality.png'), { gravity: sharp.gravity.south })
+								.toBuffer();
+						})
+						.then(function (data) {
+							res.write(data, 'binary');
+							res.end(null, 'binary');
+						});
 				}
 			})
 			.catch(err => {
@@ -69,14 +80,14 @@ router.get('/:id', basicAuth({
 						.then(deleted => {
 							fs.unlinkSync(data.doc.path);
 							res.status(200);
-							res.json({deleted: deleted});
+							res.json({ deleted: deleted });
 						}).catch(err => {
-						console.log(err);
-						if (err) {
-							res.status(500);
-							res.end();
-						}
-					})
+							console.log(err);
+							if (err) {
+								res.status(500);
+								res.end();
+							}
+						})
 				}
 			}
 		})
