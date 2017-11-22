@@ -31,7 +31,9 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 					.overlayWith(join(__dirname, '..', '..', 'public', 'netneutrality.png'), {gravity: sharp.gravity.south})
 					.toBuffer()
 					.then(function(outputBuffer) {
-						res.send(outputBuffer.toString('base64'));
+						res.write(outputBuffer, 'binary');
+						res.end(null, 'binary');
+
 					});
 				}
 			})
