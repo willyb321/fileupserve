@@ -27,7 +27,7 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 					};
 					sharp(data.doc.path)
 					.resize(520, 56)
-					.max()
+					.min()
 					.overlayWith(join(__dirname, '..', '..', 'public', 'netneutrality.png'), {gravity: sharp.gravity.south})
 					.toBuffer()
 					.then(function(outputBuffer) {
