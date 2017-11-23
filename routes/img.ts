@@ -34,13 +34,13 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 									.webp()
 									.toBuffer();
 							}
-							if (metadata.width > 968  && metadata.height > 548 && metadata.width < 1020 && metadata.height < 1020) {
+							if (metadata.width > 968  && metadata.height > 548 && metadata.width < 1000 && metadata.height < 1020) {
 								return image
 									.webp()
 									.overlayWith(join(__dirname, '..', '..', 'public', 'netneutralityinfo.png'))
 									.toBuffer();
 							}
-							if (metadata.width > 1020 && metadata.height > 1020) {
+							if (metadata.width > 1500 && metadata.height > 1200) {
 								return image
 									.webp()
 									.overlayWith(join(__dirname, '..', '..', 'public', 'sorrynotsorry.png'))
