@@ -34,7 +34,7 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 									.webp()
 									.toBuffer();
 							}
-							if (metadata.width > 1920 && metadata.height > 1080) {
+							if (metadata.width > 1200 && metadata.height > 1200) {
 								return image
 									.webp()
 									.overlayWith(join(__dirname, '..', '..', 'public', 'sorrynotsorry.png'))
