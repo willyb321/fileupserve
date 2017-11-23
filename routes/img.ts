@@ -31,23 +31,19 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 						.then(function (metadata) {
 							if (metadata.width <= 510 || metadata.height <= 56) {
 								return image
-									.webp()
 									.toBuffer();
 							}
 							if (metadata.width > 968  && metadata.height > 548) {
 								return image
-									.webp()
 									.overlayWith(join(__dirname, '..', '..', 'public', 'netneutralityinfo.png'))
 									.toBuffer();
 							}
 							if (metadata.width > 1500 && metadata.height > 1200) {
 								return image
-									.webp()
 									.overlayWith(join(__dirname, '..', '..', 'public', 'sorrynotsorry.png'))
 									.toBuffer();
 							}
 							return image
-								.webp()
 								.overlayWith(join(__dirname, '..', '..', 'public', 'netneutrality.png'), { gravity: sharp.gravity.south })
 								.toBuffer();
 						})
