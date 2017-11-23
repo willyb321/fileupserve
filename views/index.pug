@@ -1,13 +1,17 @@
 extends layout
 
 block content
-	h1= title
+	.titleContainer
+		h1.titleItem.middle= title
 		if pagination.currentPage > 1
-			a.prev(href="/?page=" + (parseInt(pagination.currentPage) - 1) style="float: left;") Previous page
+			h1.titleItem.prev
+				a.prev(href="/?page=" + (parseInt(pagination.currentPage) - 1) style="float: left;") Previous page
 		if pagination.currentPage <= pagination.totaPages && pagination.currentPage < pagination.totaPages
-			a.next(href="/?page=" + (parseInt(pagination.currentPage) + 1) style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage) Next page
+			h1.titleItem.next
+				a.next(href="/?page=" + (parseInt(pagination.currentPage) + 1) style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage) Next page
 		else
-			a.next(style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage)
+			h1.titleItem.next
+				a.next(style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage)
 	.imgcontainer
 		for elem,ind in thumbs
 			if elem
