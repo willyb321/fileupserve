@@ -1,35 +1,53 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   background-color: #343a40;
+  display: block; }
+
+h1 {
   text-align: center; }
 
 a {
   color: #00B7FF; }
 
+.imgContainer {
+  display: flex !important;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: row wrap;
+  justify-content: space-around;
+  flex-flow: row wrap; }
+
+.imgContainer > * {
+  flex: 1 100%; }
+
 h1 {
   color: #00B7FF; }
 
 .imgfig {
-  display: flex !important;
-  flex: 1;
-  text-decoration: none;
-  color: #e9ecef;
-  overflow: hidden;
-  background-color: #dee2e6;
-  padding: 1em;
+  background: tomato;
+  padding: 5px;
+  margin-top: 10px;
+  height: auto;
+  line-height: 150px;
+  color: white;
+  font-weight: bold;
+  font-size: 3em;
   text-align: center; }
-  .imgfig > figure {
-    flex: 1; }
+  .imgfig:hover {
+    background: aqua; }
 
-.img {
-  object-fit: contain;
-  max-width: 100%; }
+@media all and (max-device-width: 1280px) {
+  .imgfig {
+    width: 100%; } }
 
-.imgcap {
-  display: block !important;
-  overflow: hidden;
-  color: black;
-  text-overflow: ellipsis !important; }
+@media all and (min-device-width: 1200px) {
+  .imgfig {
+    width: 200px; } }
 
 /*# sourceMappingURL=style.css.map */

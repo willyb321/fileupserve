@@ -8,13 +8,8 @@ block content
 			a.next(href="/?page=" + (parseInt(pagination.currentPage) + 1) style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage) Next page
 		else
 			a.next(style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage)
-	for elem,ind in thumbs
-		if elem
-			.imgfig
-				figure.fig
-					a(href= elem.properURL)
-						img.img(src= elem.thumbPath style="width: 320px; height: 240px; object-fit: cover")
-					a.imgcap(href= captions[ind] target="_blank")
-						figcaption.imgcap= captions[ind]
-					a.imgcap.delete(href= captions[ind] + "?delete=true" target="_blank")
-						figcaption.imgcap Delete Image
+	.imgcontainer
+		for elem,ind in thumbs
+			if elem
+				a(href= elem.properURL)
+					img.imgfig(src= elem.thumbPath)
