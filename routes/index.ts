@@ -72,10 +72,10 @@ export function proxyImg(url) {
 		hmac.update(target);
 		return urlSafeBase64(hmac.digest())
 	};
-	const resizing_type = 'fill';
+	const resizing_type = 'crop';
 	const width = 320;
 	const height = 240;
-	const gravity = 'no';
+	const gravity = 'sm';
 	const enlarge = 1;
 	const extension = 'png';
 	const encoded_url = urlSafeBase64(url);
