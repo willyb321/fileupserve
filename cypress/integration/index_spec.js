@@ -4,9 +4,9 @@ describe('Upload test', function () {
 			.then(function () {
 				cy.screenshot();
 				let next = Cypress.$('.next');
-				let pages = parseInt(next.attr('data-total-pages'))
+				let pages = parseInt(next.attr('data-total-pages'));
 				let imgs = Cypress.$('.img');
-				console.log(next.attr('data-total-pages'))
+				console.log(next.attr('data-total-pages'));
 				let i = 0;
 				let fin = cy.check(false);
 			})

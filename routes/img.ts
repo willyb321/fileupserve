@@ -50,7 +50,11 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 						.then(function (data) {
 							res.write(data, 'binary');
 							res.end(null, 'binary');
-						});
+						})
+						.catch(err => {
+							console.log(err);
+							res.sendFile(data.doc.path, resOpts);
+						})
 				}
 			})
 			.catch(err => {
@@ -98,8 +102,13 @@ router.get('/:id', basicAuth({
 		})
 		.catch(err => {
 			console.log(err);
-			res.status(500);
-			res.end();
+			if (!err) {
+				res.status(404);
+				res.end();
+			} else {
+				res.status(500);
+				res.end();
+			}
 		})
 });
 

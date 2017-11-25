@@ -32,7 +32,7 @@ Cypress.Commands.add('delete', (img) => {
 				expect(response.headers).to.have.property('x-robots-tag', 'noindex');
 				expect(response.headers).to.have.property('x-response-time');
 			})
-})
+});
 Cypress.Commands.add('check', (fin) => {
 	if (fin === false) {
 		cy.reload()
@@ -49,4 +49,4 @@ Cypress.Commands.add('check', (fin) => {
 			}
 		})
 	}
-})
+});
