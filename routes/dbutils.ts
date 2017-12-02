@@ -127,3 +127,19 @@ export function removeImg(id) {
 		})
 	})
 }
+
+// create a schema for our links
+const urlSchema: any = new mongoose.Schema({
+	_id: {type: String, index: true},
+	long_url: {type: String, index: true},
+	created_at: Date
+});
+
+
+export interface url extends mongoose.Document {
+	_id: string;
+	long_url: string;
+	created_at: Date;
+}
+
+export const UrlModel: mongoose.Model<url> = mongoose.model('UrlModel', urlSchema);
