@@ -29,7 +29,7 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 					image
 						.metadata()
 						.then(function (metadata) {
-							if (metadata.width <= 510 || metadata.height <= 56) {
+							if (metadata.width <= 700 || metadata.height <= 120) {
 								return image
 									.toBuffer();
 							}
