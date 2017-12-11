@@ -10,64 +10,65 @@ const router = express.Router();
 
 router.get('/:id', (req: express.Request, res: express.Response, next: express.NextFunction) => {
 	const id: string = req.params.id;
-	if (req.query.delete) {
-		next();
-	} else {
-		getImg(id)
-			.then((data: checkDB) => {
-				console.log(data);
-				if (!data.exists) {
-					res.status(404);
-					res.end();
-				} else {
-					res.type('image/webp');
-					const resOpts = {
-						dotfiles: 'deny',
-						maxAge: 86400000 * 7
-					};
-					const image = sharp(data.doc.path);
-					image
-						.metadata()
-						.then(function (metadata) {
-							if (metadata.width <= 700 || metadata.height <= 120) {
-								return image
-									.toBuffer();
-							}
-							if (metadata.width > 968  && metadata.height > 548) {
-								return image
-									.overlayWith(join(__dirname, '..', '..', 'public', 'netneutralityinfo.png'))
-									.toBuffer();
-							}
-							if (metadata.width > 1500 && metadata.height > 1200) {
-								return image
-									.overlayWith(join(__dirname, '..', '..', 'public', 'sorrynotsorry.png'))
-									.toBuffer();
-							}
-							return image
-								.overlayWith(join(__dirname, '..', '..', 'public', 'netneutrality.png'), { gravity: sharp.gravity.south })
-								.toBuffer();
-						})
-						.then(function (data) {
-							res.write(data, 'binary');
-							res.end(null, 'binary');
-						})
-						.catch(err => {
-							console.log(err);
-							res.sendFile(data.doc.path, resOpts);
-						})
-				}
-			})
-			.catch(err => {
-				console.log(err);
-				if (!err) {
-					res.status(404);
-					res.end();
-				} else {
-					res.status(500);
-					res.end();
-				}
-			})
-	}
+	res.sendFile(join(__dirname, '..', '..', 'public', 'final.png'))
+	// if (req.query.delete) {
+	// 	next();
+	// } else {
+	// 	getImg(id)
+	// 		.then((data: checkDB) => {
+	// 			console.log(data);
+	// 			if (!data.exists) {
+	// 				res.status(404);
+	// 				res.end();
+	// 			} else {
+	// 				res.type('image/webp');
+	// 				const resOpts = {
+	// 					dotfiles: 'deny',
+	// 					maxAge: 86400000 * 7
+	// 				};
+	// 				const image = sharp(data.doc.path);
+	// 				image
+	// 					.metadata()
+	// 					.then(function (metadata) {
+	// 						if (metadata.width <= 700 || metadata.height <= 120) {
+	// 							return image
+	// 								.toBuffer();
+	// 						}
+	// 						if (metadata.width > 968  && metadata.height > 548) {
+	// 							return image
+	// 								.overlayWith(join(__dirname, '..', '..', 'public', 'netneutralityinfo.png'))
+	// 								.toBuffer();
+	// 						}
+	// 						if (metadata.width > 1500 && metadata.height > 1200) {
+	// 							return image
+	// 								.overlayWith(join(__dirname, '..', '..', 'public', 'sorrynotsorry.png'))
+	// 								.toBuffer();
+	// 						}
+	// 						return image
+	// 							.overlayWith(join(__dirname, '..', '..', 'public', 'netneutrality.png'), { gravity: sharp.gravity.south })
+	// 							.toBuffer();
+	// 					})
+	// 					.then(function (data) {
+	// 						res.write(data, 'binary');
+	// 						res.end(null, 'binary');
+	// 					})
+	// 					.catch(err => {
+	// 						console.log(err);
+	// 						res.sendFile(data.doc.path, resOpts);
+	// 					})
+	// 			}
+	// 		})
+	// 		.catch(err => {
+	// 			console.log(err);
+	// 			if (!err) {
+	// 				res.status(404);
+	// 				res.end();
+	// 			} else {
+	// 				res.status(500);
+	// 				res.end();
+	// 			}
+	// 		})
+	// }
 });
 
 router.get('/:id', basicAuth({
