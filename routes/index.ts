@@ -61,28 +61,7 @@ interface fileObj extends klawSync.Item {
 }
 
 export function proxyImg(url) {
-	const urlSafeBase64 = (string) => {
-		return new Buffer(string).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
-	};
-	const hexDecode = (hex) => Buffer.from(hex, 'hex');
-	url = `${process.env.DOMAIN || 'http://localhost:3000'}${url}`;
-	const sign = (salt, target, secret) => {
-		const hmac = crypto.createHmac('sha256', hexDecode(secret));
-		hmac.update(hexDecode(salt));
-		hmac.update(target);
-		return urlSafeBase64(hmac.digest())
-	};
-	const resizing_type = 'crop';
-	const width = 320;
-	const height = 240;
-	const gravity = 'sm';
-	const enlarge = 1;
-	const extension = 'png';
-	const encoded_url = urlSafeBase64(url);
-	const path = `/${resizing_type}/${width}/${height}/${gravity}/${enlarge}/${encoded_url}.${extension}`;
-
-	const signature = sign(SALT, path, KEY);
-	return `${process.env.IMGPROXY_URL || '/'}${signature}${path}`;
+	return url;
 }
 
 function getThumbsForGallery(page?: number) {
