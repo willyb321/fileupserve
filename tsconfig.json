@@ -3,7 +3,9 @@
 		"module": "commonjs",
 		"outDir": "lib/",
 		"target": "es2015",
-		"sourceMap": true
+		"lib": ["es2016", "dom", "es2015"],
+		"sourceMap": true,
+		"moduleResolution": "node"
 	},
 	"exclude": [
 		"node_modules"

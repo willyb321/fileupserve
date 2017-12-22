@@ -3,7 +3,6 @@ import * as express from 'express';
 import { getImg, checkDB, removeImg } from './dbutils'
 import * as fs from 'fs-extra';
 import * as basicAuth from 'express-basic-auth';
-import * as sharp from 'sharp';
 import { join } from 'path';
 
 const router = express.Router();
@@ -58,7 +57,12 @@ router.get('/:id', basicAuth({
 				if (fs.existsSync(data.doc.path)) {
 					removeImg(data.doc.imgId)
 						.then(deleted => {
-							fs.unlinkSync(data.doc.path);
+							try {
+								fs.unlinkSync(data.doc.path);
+
+							} catch (err) {
+								console.error(err);
+							}
 							res.status(200);
 							res.json({ deleted: deleted });
 						}).catch(err => {

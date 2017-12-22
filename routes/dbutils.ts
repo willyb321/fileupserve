@@ -20,7 +20,9 @@ const dbDocSchema = new mongoose.Schema({
 	path: String,
 	mimetype: String,
 	properURL: String,
-	thumbPath: String
+	thumbPath: String,
+	width: Number,
+	height: Number
 });
 
 export const dbDocModel = mongoose.model('Img', dbDocSchema);
@@ -45,7 +47,7 @@ export interface dbDoc extends mongoose.Document {
  * @returns {Promise.<object>} - The doc and also whether it was inserted.
  */
 export function insertImg(info) {
-	const {filename, path, mimetype, properURL, thumbPath} = info;
+	const {filename, path, mimetype, properURL, thumbPath, width, height} = info;
 	return new Promise<checkDB>(async (resolve, reject) => {
 		const already: checkDB = await imageInDB(filename);
 		if (already.exists) {
@@ -57,7 +59,9 @@ export function insertImg(info) {
 				path,
 				thumbPath,
 				properURL,
-				mimetype
+				mimetype,
+				width,
+				height
 			});
 			toInsert.save()
 				.then((newDoc: dbDoc) => {

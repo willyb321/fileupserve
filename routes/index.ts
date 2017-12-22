@@ -10,6 +10,8 @@ import * as _ from 'lodash';
 import {getAllImgs, dbDocModel} from "./dbutils";
 import * as mongoose from "mongoose";
 import * as crypto from 'crypto';
+import * as probe from 'probe-image-size';
+import {readFileSync} from "fs";
 
 const router: express.Router = express.Router();
 let thumbs = [];
@@ -48,16 +50,20 @@ getThumbsForGallery()
 
 	});
 
-export interface thumbObj extends sharp.OutputInfo, mongoose.Document {
+export interface thumbObj extends mongoose.Document {
 	path: string;
 	properURL: string;
 	filePath: string;
+	width: number;
+	height: number;
 }
 
 interface fileObj extends klawSync.Item {
 	thumbed?: boolean;
 	properURL?: string;
 	filePath?: string;
+	width?: number;
+	height?: number;
 }
 
 export function proxyImg(url) {
@@ -70,6 +76,9 @@ function getThumbsForGallery(page?: number) {
 		const data: any = await getAllImgs();
 		for (const i in data) {
 			if (data.hasOwnProperty(i)) {
+				const {width, height} = probe.sync(readFileSync(data[i].path));
+				data[i].width = width;
+				data[i].height = height;
 				data[i].path = join(filesPath, data[i].imgId);
 				data[i].properURL = `/i/${parse(data[i].path).base}`;
 				data[i].thumbPath = proxyImg(data[i].properURL);
