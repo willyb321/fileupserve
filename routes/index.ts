@@ -11,7 +11,7 @@ import {getAllImgs, dbDocModel} from "./dbutils";
 import * as mongoose from "mongoose";
 import * as crypto from 'crypto';
 import * as probe from 'probe-image-size';
-import {readFileSync} from "fs";
+import {existsSync, readFileSync} from "fs";
 
 const router: express.Router = express.Router();
 let thumbs = [];
@@ -92,9 +92,15 @@ function getThumbsForGallery(page?: number) {
 					data[i].width = probed.width;
 					data[i].height = probed.height;
 				}
-				data[i].path = join(filesPath, data[i].imgId);
-				data[i].properURL = `/i/${parse(data[i].path).base}`;
-				data[i].thumbPath = proxyImg(data[i].properURL);
+				if (!existsSync(data[i].path)) {
+					data[i].path = join(filesPath, data[i].imgId);
+				}
+				if (!data[i].properURL) {
+					data[i].properURL = `/i/${parse(data[i].path).base}`;
+				}
+				if (!data[i].thumbPath) {
+					data[i].thumbPath = proxyImg(data[i].properURL);
+				}
 				const updated = new dbDocModel(data[i]);
 				dbDocModel.findOneAndUpdate({imgId: data[i].imgId}, updated)
 					.catch(err => {
