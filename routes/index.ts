@@ -78,7 +78,7 @@ function getThumbsForGallery(page?: number) {
 			if (data.hasOwnProperty(i)) {
 				let probed;
 				try {
-					if (!data[i].width || data[i].height) {
+					if (!data[i].width || !data[i].height) {
 						probed = probe.sync(readFileSync(data[i].path));
 					}
 				} catch (err) {
