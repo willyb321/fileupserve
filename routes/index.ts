@@ -76,9 +76,11 @@ function getThumbsForGallery(page?: number) {
 		const data: any = await getAllImgs();
 		for (const i in data) {
 			if (data.hasOwnProperty(i)) {
-				const {width, height} = probe.sync(readFileSync(data[i].path));
-				data[i].width = width;
-				data[i].height = height;
+				let probed = probe.sync(readFileSync(data[i].path));
+				if (probed && probed.width && probed.height) {
+					data[i].width = probed.width;
+					data[i].height = probed.height;
+				}
 				data[i].path = join(filesPath, data[i].imgId);
 				data[i].properURL = `/i/${parse(data[i].path).base}`;
 				data[i].thumbPath = proxyImg(data[i].properURL);
