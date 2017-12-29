@@ -74,8 +74,8 @@ export function insertImg(info) {
 	})
 }
 
-export function getAllImgs() {
-	return dbDocModel.find({}).sort({_id: -1})
+export function getAllImgs(limit: number, skip: number) {
+	return dbDocModel.find({}).skip(skip).limit(limit).sort({_id: -1})
 }
 
 /**

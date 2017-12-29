@@ -3,34 +3,32 @@ extends layout
 block content
 	script(src="https://unpkg.com/infinite-scroll@3/dist/infinite-scroll.pkgd.min.js")
 	script(src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js")
+	script(src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js")
 	.titleContainer
 		h1.titleItem.middle= title
 		if pagination.currentPage > 1
 			h1.titleItem.prev
-				a.prev(href="/?page=" + (parseInt(pagination.currentPage) - 1) style="float: left;") Previous page
-		if pagination.currentPage <= pagination.totaPages && pagination.currentPage < pagination.totaPages
+				a.prev(href="/?p=" + (parseInt(pagination.currentPage) - 1) style="float: left;") Previous page
+		if pagination.currentPage < pagination.totaPages
 			h1.titleItem.next
-				a.next(href="/?page=" + (parseInt(pagination.currentPage) + 1) style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage) Next page
-		else
-			h1.titleItem.next
-				a.next(style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage)
+				a.next(href="/?p=" + (parseInt(pagination.currentPage) + 1) style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage) Next page
 	.imgContainer
 		.grid-sizer
 		for elem,ind in thumbs
 			if elem
-				a(href= elem.properURL)
-					img.imgfig(src= elem.thumbPath)
+				a.imgfig(href= elem.properURL)
+					img(src= elem.thumbPath)
 	script.
 		var elem = document.querySelector('.imgContainer');
 
 		// element argument can be a selector string
 		//   for an individual element
 		var iso = new Isotope('.imgContainer', {
-			percentPosition: false,
+			percentPosition: true,
 			masonry: {
 				// use element for option
-				// columnWidth: 100,
-				columnWidth: 50,
+				columnWidth: '.grid-sizer',
+				// columnWidth: 50,
 				gutter: 10,
 				fitWidth: true
 			}
@@ -38,5 +36,11 @@ block content
 		var infScroll = new InfiniteScroll('.imgContainer', {
 			path: '.next > a',
 			append: '.imgfig',
-			outlayer: iso
+			outlayer: iso,
+			checkLastPage: true,
+			history: 'false'
+		});
+		imagesLoaded(elem).on('progress', function () {
+			// layout Isotope after each image loads
+			iso.layout();
 		});

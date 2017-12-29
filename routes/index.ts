@@ -7,7 +7,7 @@ import * as basicAuth from "express-basic-auth";
 import * as fs from 'fs-extra';
 import * as paginate from 'paginate-array';
 import * as _ from 'lodash';
-import {getAllImgs, dbDocModel} from "./dbutils";
+import {getAllImgs, dbDocModel, dbDoc} from "./dbutils";
 import * as mongoose from "mongoose";
 import * as crypto from 'crypto';
 import * as probe from 'probe-image-size';
@@ -29,7 +29,7 @@ getThumbsForGallery()
 				uploader: (process.env.FILEUPSERVE_PW || 'test')
 			}
 		}), (req: express.Request, res: express.Response) => {
-			const page: number = parseInt(req.query.page, 10) || 1;
+			const page: number = parseInt(req.query.p, 10) || 1;
 			getThumbsForGallery(page)
 				.then((thumbs: thumbReturn) => {
 					let captions = [];
@@ -73,7 +73,12 @@ export function proxyImg(url) {
 function getThumbsForGallery(page?: number) {
 	return new Promise(async resolve => {
 		let filesOrig;
-		const data: any = await getAllImgs();
+		if (!page || page < 1) {
+			page = 1;
+		}
+		const limit = 5;
+		const skip = (page - 1) * limit;
+		const data: any = await getAllImgs(limit, skip);
 		for (const i in data) {
 			if (data.hasOwnProperty(i)) {
 				let probed;
@@ -110,9 +115,26 @@ function getThumbsForGallery(page?: number) {
 					})
 			}
 		}
-		filesOrig = paginate(data, page || 1, 5);
-		const tores: thumbReturn = {thumbs: filesOrig, pagination: filesOrig};
-		resolve(tores);
+		let count = 1;
+		dbDocModel.count({}, (err, numDocs) => {
+			if (err) {
+				console.error(err);
+			}
+			console.log(numDocs)
+			count = numDocs;
+			console.log(count)
+			const paginated = {
+				data,
+				currentPage: page,
+				perPage: limit,
+				total: count,
+				totaPages: Math.round(count / limit)
+			};
+			console.log(paginated);
+			filesOrig = paginated;
+			const tores: thumbReturn = {thumbs: filesOrig, pagination: filesOrig};
+			resolve(tores);
+		});
 	})
 }
 
