@@ -15,8 +15,7 @@ block content
 		.grid-sizer
 		for elem,ind in thumbs
 			if elem
-				a(href= elem.properURL)
-					img.imgfig(src= elem.thumbPath)
+				img.imgfig(src= elem.thumbPath)
 	script.
 		var elem = document.querySelector('.imgContainer');
 

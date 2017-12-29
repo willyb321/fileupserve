@@ -58,11 +58,9 @@ h1 {
   color: #00B7FF; }
 
 .imgfig {
-  background: tomato;
   line-height: 150px;
   color: white;
   width: 33.3%;
-  max-width: 33.3%;
   font-weight: bold;
   font-size: 3em;
   text-align: center;
@@ -70,8 +68,6 @@ h1 {
   .imgfig > img {
     display: block;
     max-width: 100%; }
-  .imgfig:hover {
-    background: aqua; }
 
 .grid-sizer {
   width: 33.333%; }
