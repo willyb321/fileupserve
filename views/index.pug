@@ -15,7 +15,7 @@ block content
 	.imgcontainer
 		for elem,ind in thumbs
 			if elem
-				a(href= elem.properURL)
-					img.imgfig.lazy(src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" width="25%" height="25%" data-src= elem.thumbPath)
+				a(href= elem.properURL width="15%" height="15%")
+					img.imgfig.lazy(src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" width="15%" height="15%" data-src= elem.thumbPath)
 	script
 		include lazyload.js
