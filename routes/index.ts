@@ -110,7 +110,7 @@ function getThumbsForGallery(page?: number) {
 					})
 			}
 		}
-		filesOrig = paginate(data, page || 1, 10);
+		filesOrig = paginate(data, page || 1, 5);
 		const tores: thumbReturn = {thumbs: filesOrig, pagination: filesOrig};
 		resolve(tores);
 	})

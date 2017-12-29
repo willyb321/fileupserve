@@ -1,6 +1,8 @@
 extends layout
 
 block content
+	script(src="https://unpkg.com/infinite-scroll@3/dist/infinite-scroll.pkgd.min.js")
+	script(src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js")
 	.titleContainer
 		h1.titleItem.middle= title
 		if pagination.currentPage > 1
@@ -13,9 +15,28 @@ block content
 			h1.titleItem.next
 				a.next(style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage)
 	.imgContainer
+		.grid-sizer
 		for elem,ind in thumbs
 			if elem
-				a(href= elem.properURL width="15%" height="15%")
-					img.imgfig.lazy(src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" width="15%" height="15%" data-src= elem.thumbPath)
-	script
-		include lazyload.js
+				a(href= elem.properURL)
+					img.imgfig(src= elem.thumbPath)
+	script.
+		var elem = document.querySelector('.imgContainer');
+
+		// element argument can be a selector string
+		//   for an individual element
+		var iso = new Isotope('.imgContainer', {
+			percentPosition: false,
+			masonry: {
+				// use element for option
+				// columnWidth: 100,
+				columnWidth: 50,
+				gutter: 10,
+				fitWidth: true
+			}
+		});
+		var infScroll = new InfiniteScroll('.imgContainer', {
+			path: '.next > a',
+			append: '.imgfig',
+			outlayer: iso
+		});
