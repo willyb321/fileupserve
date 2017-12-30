@@ -58,20 +58,10 @@ h1 {
   color: #00B7FF; }
 
 .imgfig {
-  line-height: 150px;
-  color: white;
-  width: 33.3%;
-  font-weight: bold;
-  font-size: 3em;
-  text-align: center;
-  float: left;
-  display: block;
-  max-width: 100%; }
+  width: 20%;
+  border: 2px solid #b6b5b4; }
 
 .grid-sizer {
-  width: 33.333%; }
-
-.grid-item {
-  width: 33.333%; }
+  width: 20%; }
 
 /*# sourceMappingURL=style.css.map */
