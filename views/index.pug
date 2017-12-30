@@ -3,6 +3,7 @@ extends layout
 block content
 	script(src="https://unpkg.com/infinite-scroll@3/dist/infinite-scroll.pkgd.min.js")
 	script(src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js")
+	script(src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js")
 	.titleContainer
 		h1.titleItem.middle= title
 		if pagination.currentPage > 1
@@ -39,4 +40,8 @@ block content
 			prefill: true,
 			checkLastPage: true,
 			history: 'false'
+		});
+		imagesLoaded(elem).on( 'progress', function() {
+			// layout Isotope after each image loads
+			iso.layout();
 		});
