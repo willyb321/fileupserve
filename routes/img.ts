@@ -14,7 +14,6 @@ router.get('/:id', (req: express.Request, res: express.Response, next: express.N
 	} else {
 		getImg(id)
 			.then((data: checkDB) => {
-				console.log(data);
 				if (!data.exists) {
 					res.status(404);
 					res.end();

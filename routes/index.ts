@@ -120,9 +120,7 @@ function getThumbsForGallery(page?: number) {
 			if (err) {
 				console.error(err);
 			}
-			console.log(numDocs)
 			count = numDocs;
-			console.log(count)
 			const paginated = {
 				data,
 				currentPage: page,
@@ -130,7 +128,6 @@ function getThumbsForGallery(page?: number) {
 				total: count,
 				totaPages: Math.round(count / limit)
 			};
-			console.log(paginated);
 			filesOrig = paginated;
 			const tores: thumbReturn = {thumbs: filesOrig, pagination: filesOrig};
 			resolve(tores);
