@@ -33,15 +33,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(favicon(join(__dirname, '..', 'public', 'favicon.ico')));
-app.use((req, res, next) => {
-	res.setHeader('X-Robots-Tag', 'noindex');
-	next();
-});
 
-app.get('/robots.txt', (req: express.Request, res: express.Response) => {
-	res.type('text/plain');
-	res.send("User-agent: *\nDisallow: /");
-});
 app.use(responseTime());
 app.use(logger('dev'));
 app.use(bodyParser.json());
