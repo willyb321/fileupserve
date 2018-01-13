@@ -15,7 +15,7 @@ export interface checkDB {
 }
 
 const dbDocSchema = new mongoose.Schema({
-	imgId: String,
+	imgId: {type: String, index: true},
 	filename: String,
 	path: String,
 	mimetype: String,
