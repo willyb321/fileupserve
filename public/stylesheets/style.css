@@ -59,9 +59,14 @@ h1 {
 
 .imgfig {
   width: 20%;
-  border: 2px solid #b6b5b4; }
+  border: 2px solid #b6b5b4;
+  max-height: 350px; }
 
 .grid-sizer {
   width: 20%; }
+
+@media all and (max-device-width: 1280px) {
+  .imgfig {
+    width: 100%; } }
 
 /*# sourceMappingURL=style.css.map */
