@@ -25,12 +25,7 @@ getThumbsForGallery()
 	.then(() => {
 		console.log('main page ready');
 
-		router.get('/', ensureLoggedIn('/login'), basicAuth({
-			challenge: true,
-			users: {
-				uploader: (process.env.FILEUPSERVE_PW || 'test')
-			}
-		}), (req: express.Request, res: express.Response) => {
+		router.get('/', ensureLoggedIn('/login'), (req: express.Request, res: express.Response) => {
 			const page: number = parseInt(req.query.p, 10) || 1;
 			getThumbsForGallery(page)
 				.then((thumbs: thumbReturn) => {
