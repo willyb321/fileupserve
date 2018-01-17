@@ -4,6 +4,8 @@ block content
 	script(src="https://unpkg.com/infinite-scroll@3/dist/infinite-scroll.pkgd.min.js")
 	script(src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js")
 	script(src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js")
+	script
+		include ./clipboard.js
 	.titleContainer
 		h1.titleItem.middle= title
 		if pagination.currentPage > 1
@@ -16,7 +18,7 @@ block content
 		.grid-sizer
 		for elem,ind in thumbs
 			if elem
-				img.imgfig(src= elem.thumbPath)
+				img.imgfig(src= elem.thumbPath onclick="copyToClipboard(this.src)")
 	script.
 		var elem = document.querySelector('.imgContainer');
 
