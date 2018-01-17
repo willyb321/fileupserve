@@ -12,6 +12,8 @@ import * as mongoose from "mongoose";
 import * as crypto from 'crypto';
 import * as probe from 'probe-image-size';
 import {existsSync, readFileSync} from "fs";
+import * as passport from "passport";
+import {ensureLoggedIn} from "connect-ensure-login";
 
 const router: express.Router = express.Router();
 let thumbs = [];
@@ -23,7 +25,7 @@ getThumbsForGallery()
 	.then(() => {
 		console.log('main page ready');
 
-		router.get('/', basicAuth({
+		router.get('/', ensureLoggedIn('/login'), basicAuth({
 			challenge: true,
 			users: {
 				uploader: (process.env.FILEUPSERVE_PW || 'test')
@@ -148,5 +150,37 @@ export function sharpie(info: fileObj) {
 	info.path = proxyImg(info.properURL);
 	return info;
 }
+const opts = {
+	clientID: process.env.AUTH0_CLIENTID,
+	domain: process.env.AUTH0_DOMAIN,
+	redirectUri: process.env.AUTH0_CALLBACK_URL || 'http://localhost:3000/callback',
+	audience: 'https://' + process.env.AUTH0_DOMAIN + '/userinfo',
+	responseType: 'code',
+	scope: 'openid'
+};
+router.get(
+	'/login',
+	passport.authenticate('auth0', opts),
+	function(req, res) {
+		res.redirect('/');
+	}
+);
+
+// Perform session logout and redirect to homepage
+router.get('/logout', (req, res) => {
+	req.logout();
+	res.redirect('/');
+});
+
+// Perform the final stage of authentication and redirect to '/user'
+router.get(
+	'/callback',
+	passport.authenticate('auth0', {
+		failureRedirect: '/'
+	}),
+	(req: any, res) => {
+		res.redirect(req.session.returnTo || '/');
+	}
+);
 
 export default router;

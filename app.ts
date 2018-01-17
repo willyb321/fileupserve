@@ -7,6 +7,8 @@ import * as bodyParser from 'body-parser';
 import {join} from 'path';
 import * as responseTime from 'response-time';
 import * as fs from 'fs-extra';
+import * as passport from "passport";
+import * as Auth0Strategy from 'passport-auth0';
 import 'source-map-support/register';
 
 fs.ensureDirSync(join(__dirname, '..', 'public', 'thumbs'));
@@ -28,7 +30,29 @@ process.on('unhandledRejection', (err: Error) => {
 
 const app: express.Application = express();
 const cacheTime: number = 86400000 * 7;
+// Configure Passport to use Auth0
+const strategy = new Auth0Strategy(
+	{
+		domain: process.env.AUTH0_DOMAIN,
+		clientID: process.env.AUTH0_CLIENTID,
+		clientSecret: process.env.AUTH0_CLIENTSECRET,
+		callbackURL: process.env.AUTH0_CALLBACKURL || 'http://localhost:3000/callback'
+	},
+	(accessToken, refreshToken, extraParams, profile, done) => {
+		return done(null, profile);
+	}
+);
 
+passport.use(strategy);
+
+// This can be used to keep a smaller payload
+passport.serializeUser(function(user, done) {
+	done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+	done(null, user);
+});
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -39,7 +63,13 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
-
+app.use(require('express-session')({
+	secret: process.env.SESSION_SECRET,
+	resave: true,
+	saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 // view engine setup
 app.set('views', join(__dirname, '..', 'views'));
 app.set('view engine', 'pug');
