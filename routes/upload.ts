@@ -1,6 +1,6 @@
 ///<reference path="../node_modules/@types/node/index.d.ts"/>
 import * as express from 'express';
-import {join} from 'path';
+import {extname, join} from 'path';
 import {insertImg, checkDB} from './dbutils';
 import * as basicAuth from 'express-basic-auth';
 import * as multer from 'multer';
@@ -8,9 +8,13 @@ import {proxyImg} from './index';
 import * as probe from 'probe-image-size';
 import {readFileSync} from "fs";
 
+function filterUploads(req, file, cb) {
+	const extension = extname(file.originalname);
+	extension !== '.png' ? cb(null, false) : cb(null, true);
+}
 
 const router = express.Router();
-const upload = multer({dest: join(__dirname, '..', 'uploads')});
+const upload = multer({dest: join(__dirname, '..', 'uploads'), fileFilter: filterUploads});
 
 interface addedData {
 	done: boolean;
