@@ -7,8 +7,11 @@ import { join } from 'path';
 
 const router = express.Router();
 
-router.get('/:id', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get('/:id\.:ext?', (req: express.Request, res: express.Response, next: express.NextFunction) => {
 	const id: string = req.params.id;
+	if (!req.params.ext) {
+		return res.redirect(`/i/${req.params.id}.png`);
+	}
 	if (req.query.delete) {
 		next();
 	} else {
