@@ -37,7 +37,7 @@ router.post('/', basicAuth({
 	challenge: true
 }), upload.single('imageData'), (req: Request, res: express.Response) => {
 	if (req.file) {
-		req.file.properURL = `/i/${req.file.filename}`;
+		req.file.properURL = `/i/${req.file.filename}.png`;
 		req.file.thumbPath = proxyImg(req.file.properURL);
 		const {width, height} = probe.sync(readFileSync(req.file.path));
 		req.file.width = width;
