@@ -46,7 +46,7 @@ router.post('/', basicAuth({
 			.then((data: checkDB) => {
 				if (data.exists === true) {
 					console.log(req.file);
-					const url: string = `${req.get('X-Forwarded-Proto') || req.protocol}://${req.get('X-Forwarded-Host') || req.get('host')}/i/${req.file.filename}`;
+					const url: string = `${req.get('X-Forwarded-Proto') || req.protocol}://${req.get('X-Forwarded-Host') || req.get('host')}/i/${req.file.filename}.png`;
 					const toReturn: addedData = {done: true, url: url, deleteURL: `${url}?delete=true`};
 					res.json(toReturn);
 				}
