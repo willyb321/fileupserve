@@ -1,6 +1,7 @@
 extends layout
 
 block content
+	- const truncateString = (str, num) => str.length > num ? str.slice(0, num > 3 ? num - 3 : num) + '...' : str;
 	section.hero.is-primary.is-bold
 		.hero-body
 			.container
@@ -15,10 +16,10 @@ block content
 					td= ind
 					th Long URL
 					td
-						a(href= val.long_url)= val.long_url
+						a(href= val.long_url title= val.long_url)= truncateString(val.long_url, 20)
 					th Short URL
 						td
-							a(href= "https://willb.info/s/" + val._id)= "https://willb.info/s/" + val._id
+							a(href= domain + "/s/" + val._id)= domain + "/s/" + val._id
 					th ID
 					td= val._id
 					th Click Count

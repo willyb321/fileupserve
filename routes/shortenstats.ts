@@ -16,7 +16,7 @@ router.get('/', basicAuth({
 		.then((doc: url[]) => {
 			if (doc) {
 				// found an entry in the DB, redirect the user to their destination
-				res.render('stats', {stats: doc});
+				res.render('stats', {stats: doc, domain: process.env.DOMAIN || 'http://localhost:3000'});
 			} else {
 				// nothing found, take 'em home
 				res.status(404);
