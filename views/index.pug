@@ -6,19 +6,24 @@ block content
 	script(src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js")
 	script
 		include ./clipboard.js
-	.titleContainer
-		h1.titleItem.middle= title
-		if pagination.currentPage > 1
-			h1.titleItem.prev
-				a.prev(href="/?p=" + (parseInt(pagination.currentPage) - 1) style="float: left;") Previous page
-		if pagination.currentPage < pagination.totaPages
-			h1.titleItem.next
-				a.next(href="/?p=" + (parseInt(pagination.currentPage) + 1) style="float: right;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage) Next page
-	.imgContainer
-		.grid-sizer
-		for elem,ind in thumbs
-			if elem
-				img.imgfig(src= elem.thumbPath onclick="copyToClipboard(this.src)")
+	section.hero.is-primary.is-bold
+		.hero-body
+			.container
+				h1.title= title
+				h2.subtitle Current page: #{pagination.currentPage}
+			if pagination.currentPage > 1
+				h1.titleItem.prev
+					a.prev(href="/?p=" + (parseInt(pagination.currentPage) - 1) style="display: none;") Previous page
+			if pagination.currentPage < pagination.totaPages
+				h1.titleItem.next
+					a.next(href="/?p=" + (parseInt(pagination.currentPage) + 1) style="display: none;" data-total-pages= pagination.totaPages data-current-page= pagination.currentPage) Next page
+	section
+		.container-fluid
+			.imgContainer
+				.grid-sizer
+				for elem,ind in thumbs
+					if elem
+						img.imgfig(src= elem.thumbPath onclick="copyToClipboard(this.src)")
 	script.
 		var elem = document.querySelector('.imgContainer');
 

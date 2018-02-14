@@ -151,7 +151,7 @@ const opts = {
 	redirectUri: process.env.AUTH0_CALLBACK_URL || 'http://localhost:3000/callback',
 	audience: 'https://' + process.env.AUTH0_DOMAIN + '/userinfo',
 	responseType: 'code',
-	scope: 'openid'
+	scope: 'openid profile'
 };
 router.get(
 	'/login',

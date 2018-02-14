@@ -1,0 +1,28 @@
+extends layout
+
+block content
+	section.hero.is-primary.is-bold
+		.hero-body
+			.container
+				h1.title URL Shorten Stats
+				h2.subtitle Click counts.
+	.container
+		table.table.is-bordered.is-striped
+			tbody
+			each val,ind in stats
+				tr
+					th Index
+					td= ind
+					th Long URL
+					td
+						a(href= val.long_url)= val.long_url
+					th Short URL
+						td
+							a(href= "https://willb.info/s/" + val._id)= "https://willb.info/s/" + val._id
+					th ID
+					td= val._id
+					th Click Count
+					td= val.click_count
+					th Created At
+					td= val.created_at
+				//#{ind + 1} #{val._id} - #{val.click_count} clicks

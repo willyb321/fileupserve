@@ -13,13 +13,14 @@ router.get('/', basicAuth({
 	},
 	challenge: true
 }), (req: express.Request, res: express.Response) => {
+	console.log(req.query);
 	if (!req.query.longURL) {
 		res.status(400);
 		res.end();
 		return;
 	}
 	// check if url already exists in database
-	UrlModel.findOne({long_url: req.query.longURL}, function (err, doc: url) {
+	UrlModel.findOne({long_url: req.query.longURL}, (err, doc: url) => {
 		if (doc) {
 			// URL has already been shortened
 			res.json({shortURL: `${process.env.DOMAIN}/s/${doc._id}`})

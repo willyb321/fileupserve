@@ -1,13 +1,6 @@
-body {
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background-color: #343a40;
-  max-width: 2500px; }
-
+@import url(bulma.css);
 * {
   box-sizing: border-box; }
-
-h1 {
-  text-align: center; }
 
 .titleContainer {
   display: flex !important;
@@ -25,8 +18,7 @@ h1 {
 
 .titleItem {
   max-width: 50%;
-  padding: 5px;
-  margin-top: 10px;
+  padding: 1px;
   height: auto;
   font-weight: bold;
   color: #00B7FF;
@@ -54,13 +46,11 @@ a {
     display: block;
     clear: both; }
 
-h1 {
-  color: #00B7FF; }
-
 .imgfig {
   width: 20%;
-  border: 2px solid #b6b5b4;
-  max-height: 350px; }
+  border: 1px solid #b6b5b4;
+  border: 1px solid rgba(182, 181, 180, 0.4);
+  max-height: 50vh; }
 
 .grid-sizer {
   width: 20%; }

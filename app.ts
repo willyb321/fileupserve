@@ -19,6 +19,7 @@ import upload from './routes/upload';
 import img from './routes/img';
 import shorten from './routes/shorten';
 import shortened from './routes/shortened';
+import stats from './routes/shortenstats';
 
 process.on('uncaughtException', (err: Error) => {
 	console.log(err);
@@ -87,5 +88,6 @@ app.use('/i', img);
 app.use('/upload', upload);
 app.use('/sh', shorten);
 app.use('/s/', shortened);
+app.use('/stats', stats);
 
 export default app;

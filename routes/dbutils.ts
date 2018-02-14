@@ -136,6 +136,7 @@ export function removeImg(id) {
 const urlSchema: any = new mongoose.Schema({
 	_id: {type: String, index: true},
 	long_url: {type: String, index: true},
+	click_count: {type: Number, index: true, default: 0},
 	created_at: Date
 });
 
@@ -144,6 +145,7 @@ export interface url extends mongoose.Document {
 	_id: string;
 	long_url: string;
 	created_at: Date;
+	click_count?: number;
 }
 
 export const UrlModel: mongoose.Model<url> = mongoose.model('UrlModel', urlSchema);
