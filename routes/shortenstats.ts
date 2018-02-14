@@ -13,6 +13,7 @@ router.get('/', basicAuth({
 }), (req: express.Request, res: express.Response) => {
 	UrlModel.find({})
 		.sort({click_count: -1})
+		.limit(50)
 		.then((doc: url[]) => {
 			if (doc) {
 				// found an entry in the DB, redirect the user to their destination
