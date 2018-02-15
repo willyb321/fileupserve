@@ -5,8 +5,16 @@ mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/imgs');
 // const db = new Datastore({filename: require('path').join(__dirname, 'imgDb.db'), autoload: true});
 export const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function () {
-	console.log('Connected!')
+let Attachment;
+let gridfs;
+db.once('open', () => {
+	console.log('Connected!');
+	gridfs = require('mongoose-gridfs')({
+		collection: 'attachments',
+		model: 'Attachment',
+		mongooseConnection: mongoose.connection
+	});
+	Attachment = gridfs.model;
 });
 
 export interface checkDB {
@@ -47,7 +55,7 @@ export interface dbDoc extends mongoose.Document {
  * @returns {Promise.<object>} - The doc and also whether it was inserted.
  */
 export function insertImg(info) {
-	const {filename, path, mimetype, properURL, thumbPath, width, height} = info;
+	const {filename, path, mimetype, properURL, thumbPath} = info;
 	return new Promise<checkDB>(async (resolve, reject) => {
 		const already: checkDB = await imageInDB(filename);
 		if (already.exists) {
@@ -59,9 +67,7 @@ export function insertImg(info) {
 				path,
 				thumbPath,
 				properURL,
-				mimetype,
-				width,
-				height
+				mimetype
 			});
 			toInsert.save()
 				.then((newDoc: dbDoc) => {

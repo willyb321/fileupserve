@@ -14,7 +14,12 @@ function filterUploads(req, file, cb) {
 }
 
 const router = express.Router();
-const upload = multer({dest: join(__dirname, '..', 'uploads'), fileFilter: filterUploads});
+
+const storage = require('multer-gridfs-storage')({
+	url: process.env.MONGO_URL
+});
+
+const upload = multer({dest: join(__dirname, '..', '..', 'uploads'), fileFilter: filterUploads, storage});
 
 interface addedData {
 	done: boolean;
@@ -25,6 +30,7 @@ interface file extends Express.Multer.File {
 	properURL: string;
 	thumbPath: string;
 	width: number;
+	id: string;
 	height: number;
 }
 interface Request extends express.Request {
@@ -37,16 +43,13 @@ router.post('/', basicAuth({
 	challenge: true
 }), upload.single('imageData'), (req: Request, res: express.Response) => {
 	if (req.file) {
-		req.file.properURL = `/i/${req.file.filename}.png`;
+		req.file.properURL = `/i/${req.file.id}.png`;
 		req.file.thumbPath = proxyImg(req.file.properURL);
-		const {width, height} = probe.sync(readFileSync(req.file.path));
-		req.file.width = width;
-		req.file.height = height;
 		insertImg(req.file)
 			.then((data: checkDB) => {
 				if (data.exists === true) {
 					console.log(req.file);
-					const url: string = `${req.get('X-Forwarded-Proto') || req.protocol}://${req.get('X-Forwarded-Host') || req.get('host')}/i/${req.file.filename}.png`;
+					const url: string = `${req.get('X-Forwarded-Proto') || req.protocol}://${req.get('X-Forwarded-Host') || req.get('host')}/i/${req.file.id}.png`;
 					const toReturn: addedData = {done: true, url: url, deleteURL: `${url}?delete=true`};
 					res.json(toReturn);
 				}
