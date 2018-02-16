@@ -78,22 +78,6 @@ function getThumbsForGallery(page?: number) {
 		const data: any = await getAllImgs(limit, skip);
 		for (const i in data) {
 			if (data.hasOwnProperty(i)) {
-				let probed;
-				try {
-					if (!data[i].width || !data[i].height) {
-						probed = probe.sync(readFileSync(data[i].path));
-					}
-				} catch (err) {
-					if (err.code === 'ENOENT') {
-						// no-op
-					} else {
-						console.log(err);
-					}
-				}
-				if (probed && probed.width && probed.height) {
-					data[i].width = probed.width;
-					data[i].height = probed.height;
-				}
 				if (!existsSync(data[i].path)) {
 					data[i].path = join(filesPath, data[i].imgId);
 				}

@@ -1,10 +1,21 @@
 ///<reference path="../node_modules/@types/node/index.d.ts"/>
 import * as express from 'express';
-import { getImg, checkDB, removeImg } from './dbutils'
+import {getImg, checkDB, removeImg, db, dbDocModel} from './dbutils'
 import * as fs from 'fs-extra';
 import * as basicAuth from 'express-basic-auth';
 import { join } from 'path';
-
+import * as mongoose from "mongoose";
+// const db = new Datastore({filename: require('path').join(__dirname, 'imgDb.db'), autoload: true});
+db.on('error', console.error.bind(console, 'connection error:'));
+let Attachment;
+let gridfs;
+db.once('open', () => {
+	console.log('Connected!');
+	gridfs = require('mongoose-gridfs')({
+		mongooseConnection: mongoose.connection
+	});
+	Attachment = gridfs.model;
+});
 const router = express.Router();
 
 router.get('/:id\.:ext?', (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -15,78 +26,42 @@ router.get('/:id\.:ext?', (req: express.Request, res: express.Response, next: ex
 	if (req.query.delete) {
 		next();
 	} else {
-		getImg(id)
-			.then((data: checkDB) => {
-				if (!data.exists) {
-					res.status(404);
-					res.end();
-				} else {
-					res.type(data.doc.mimetype || 'image/png');
-					const resOpts = {
-						dotfiles: 'deny',
-						maxAge: 86400000 * 7
-					};
-					res.sendFile(data.doc.path, resOpts);
-				}
-			})
-			.catch(err => {
-				console.log(err);
-				if (!err) {
-					res.status(404);
-					res.end();
-				} else {
-					res.status(500);
-					res.end();
-				}
-			})
+		Attachment.readById(id, (err, buf) => {
+			if (err) {
+				console.error(err);
+				res.status(500);
+				res.end();
+			} else {
+				res.type('image/png');
+				res.send(buf);
+			}
+		});
 	}
 });
 
-router.get('/:id', basicAuth({
+router.get('/:id.:ext?', basicAuth({
 	users: {
 		uploader: (process.env.FILEUPSERVE_PW || 'test')
 	},
 	challenge: true
 }), (req: express.Request, res: express.Response) => {
 	const id: string = req.params.id;
-	getImg(id)
-		.then(async (data: checkDB) => {
-			console.log(data);
-			if (!data.exists) {
-				res.status(404);
-				res.end();
-			} else {
-				if (fs.existsSync(data.doc.path)) {
-					removeImg(data.doc.imgId)
-						.then(deleted => {
-							try {
-								fs.unlinkSync(data.doc.path);
-
-							} catch (err) {
-								console.error(err);
-							}
-							res.status(200);
-							res.json({ deleted: deleted });
-						}).catch(err => {
-							console.log(err);
-							if (err) {
-								res.status(500);
-								res.end();
-							}
-						})
+	Attachment.unlinkById(id, (err, unlinked) => {
+		if (err) {
+			res.status(500);
+			res.end();
+		} else {
+			dbDocModel.findOneAndRemove({filename: unlinked.filename}, (err) => {
+				if (err !== null) {
+					console.log(err);
+					res.json({deleted: false, err});
+				} else {
+					res.json({deleted: true, unlinked});
 				}
-			}
-		})
-		.catch(err => {
-			console.log(err);
-			if (!err) {
-				res.status(404);
-				res.end();
-			} else {
-				res.status(500);
-				res.end();
-			}
-		})
+			});
+			console.log(unlinked);
+		}
+	})
 });
 
 export default router;
