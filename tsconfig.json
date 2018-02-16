@@ -13,6 +13,7 @@
 	"include": [
 		"routes/",
 		"bin/",
-		"app.ts"
+		"app.ts",
+		"gridfs-migration.ts"
 	]
 }
