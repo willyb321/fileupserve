@@ -9,6 +9,8 @@ import * as responseTime from 'response-time';
 import * as fs from 'fs-extra';
 import * as passport from "passport";
 import * as Auth0Strategy from 'passport-auth0';
+import * as session from 'express-session';
+import * as connect_mongo from 'connect-mongo';
 import 'source-map-support/register';
 
 fs.ensureDirSync(join(__dirname, '..', 'public', 'thumbs'));
@@ -20,6 +22,7 @@ import img from './routes/img';
 import shorten from './routes/shorten';
 import shortened from './routes/shortened';
 import stats from './routes/shortenstats';
+
 const flash = require('connect-flash');
 process.on('uncaughtException', (err: Error) => {
 	console.log(err);
@@ -66,14 +69,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 
-
+const MongoStore = connect_mongo(session);
 // view engine setup
 app.set('views', join(__dirname, '..', 'views'));
 app.set('view engine', 'pug');
-app.use(require('express-session')({
+app.use(session({
 	secret: process.env.SESSION_SECRET,
 	resave: true,
-	saveUninitialized: true
+	saveUninitialized: true,
+	store: new MongoStore({url: process.env.MONGO_URL})
 }));
 
 app.use(passport.initialize());
