@@ -38,17 +38,17 @@
 			, src = el.getAttribute('data-src');
 		img.onload = function() {
 			if (!! el.parent)
-				el.parent.replaceChild(img, el)
+				el.parent.replaceChild(img, el);
 			else
 				el.src = src;
 
 			fn? fn() : null;
-		}
+		};
 		img.src = src;
 	}
 
 	function elementInViewport(el) {
-		var rect = el.getBoundingClientRect()
+		var rect = el.getBoundingClientRect();
 
 		return (
 			rect.top    >= 0
@@ -57,7 +57,7 @@
 		)
 	}
 
-	var images = new Array()
+	var images = []
 		, query = $q('img.lazy')
 		, processScroll = function(){
 			for (var i = 0; i < images.length; i++) {
@@ -66,15 +66,14 @@
 						images.splice(i, i);
 					});
 				}
-			};
+			}
 		}
 	;
 	// Array.prototype.slice.call is not callable under our lovely IE8
 	for (var i = 0; i < query.length; i++) {
 		images.push(query[i]);
-	};
-
+	}
 	processScroll();
 	addEventListener('scroll',processScroll);
 
-}(this)
+}(this);

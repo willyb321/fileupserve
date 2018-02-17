@@ -3,17 +3,17 @@ import * as express from 'express';
 import {join, parse} from 'path';
 import * as klawSync from 'klaw-sync';
 import * as sharp from 'sharp';
-import * as basicAuth from "express-basic-auth";
+import * as basicAuth from 'express-basic-auth';
 import * as fs from 'fs-extra';
 import * as paginate from 'paginate-array';
 import * as _ from 'lodash';
-import {getAllImgs, dbDocModel, dbDoc} from "./dbutils";
-import * as mongoose from "mongoose";
+import {getAllImgs, dbDocModel, dbDoc} from './dbutils';
+import * as mongoose from 'mongoose';
 import * as crypto from 'crypto';
 import * as probe from 'probe-image-size';
-import {existsSync, readFileSync} from "fs";
-import * as passport from "passport";
-import {ensureLoggedIn} from "connect-ensure-login";
+import {existsSync, readFileSync} from 'fs';
+import * as passport from 'passport';
+import {ensureLoggedIn} from 'connect-ensure-login';
 
 const router: express.Router = express.Router();
 let thumbs = [];
@@ -126,6 +126,7 @@ export function sharpie(info: fileObj) {
 	info.path = proxyImg(info.properURL);
 	return info;
 }
+
 const opts = {
 	clientID: process.env.AUTH0_CLIENTID,
 	domain: process.env.AUTH0_DOMAIN,
@@ -134,29 +135,34 @@ const opts = {
 	responseType: 'code',
 	scope: 'openid profile'
 };
-router.get(
-	'/login',
-	passport.authenticate('auth0', opts),
-	function(req, res) {
-		res.redirect('/');
-	}
-);
 
-// Perform session logout and redirect to homepage
-router.get('/logout', (req, res) => {
+router.get('/login', passport.authenticate('auth0', opts),
+	(req, res) => {
+		res.redirect('/');
+	});
+
+router.get('/logout', function (req, res) {
 	req.logout();
 	res.redirect('/');
 });
 
-// Perform the final stage of authentication and redirect to '/user'
-router.get(
-	'/callback',
+router.get('/callback',
 	passport.authenticate('auth0', {
-		failureRedirect: '/'
+		failureRedirect: '/failure'
 	}),
-	(req: any, res) => {
-		res.redirect(req.session.returnTo || '/');
+	function (req, res) {
+		res.redirect(req.session.returnTo || '/user');
 	}
 );
+
+router.get('/failure', (req: any, res) => {
+	const error = req.flash('error');
+	const error_description = req.flash('error_description');
+	req.logout();
+	res.render('failure', {
+		error: error[0],
+		error_description: error_description[0]
+	});
+});
 
 export default router;

@@ -20,7 +20,7 @@ import img from './routes/img';
 import shorten from './routes/shorten';
 import shortened from './routes/shortened';
 import stats from './routes/shortenstats';
-
+const flash = require('connect-flash');
 process.on('uncaughtException', (err: Error) => {
 	console.log(err);
 });
@@ -28,9 +28,6 @@ process.on('uncaughtException', (err: Error) => {
 process.on('unhandledRejection', (err: Error) => {
 	console.log(err);
 });
-
-const app: express.Application = express();
-const cacheTime: number = 86400000 * 7;
 // Configure Passport to use Auth0
 const strategy = new Auth0Strategy(
 	{
@@ -54,6 +51,10 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(user, done) {
 	done(null, user);
 });
+
+const app: express.Application = express();
+const cacheTime: number = 86400000 * 7;
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -64,16 +65,33 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
+
+
+// view engine setup
+app.set('views', join(__dirname, '..', 'views'));
+app.set('view engine', 'pug');
 app.use(require('express-session')({
 	secret: process.env.SESSION_SECRET,
 	resave: true,
 	saveUninitialized: true
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
-// view engine setup
-app.set('views', join(__dirname, '..', 'views'));
-app.set('view engine', 'pug');
+
+
+app.use(flash());
+
+// Handle auth failure error messages
+app.use((req: any, res, next) => {
+	if (req && req.query && req.query.error) {
+		req.flash("error", req.query.error);
+	}
+	if (req && req.query && req.query.error_description) {
+		req.flash("error_description", req.query.error_description);
+	}
+	next();
+});
 
 app.use(sassMiddleware({
 	src: join(__dirname, '..', 'public'),
@@ -81,6 +99,13 @@ app.use(sassMiddleware({
 	indentedSyntax: true, // true = .sass and false = .scss
 	sourceMap: true
 }));
+
+// Check logged in
+app.use((req, res, next) => {
+	res.locals.loggedIn = req.session.passport && typeof req.session.passport.user != 'undefined';
+	next();
+});
+
 app.use(express.static(join(__dirname, '..', 'public'), {maxAge: cacheTime}));
 app.use('/thumbs/:id', express.static(join(__dirname, '..', 'public', 'thumbs'), {maxAge: cacheTime}));
 app.use('/', index);
