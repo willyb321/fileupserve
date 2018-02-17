@@ -29,16 +29,13 @@ router.get('/:id\.:ext?', (req: express.Request, res: express.Response, next: ex
 		dbDocModel.findOne({filename: id})
 			.then((doc: dbDoc) => {
 				if (doc) {
-					Attachment.readById(doc.gridId, (err, buf) => {
-						if (err) {
-							console.error(err);
-							res.status(500);
-							res.end();
-						} else {
-							res.type('image/png');
-							res.send(buf);
-						}
+					const stream = Attachment.readById(doc.gridId);
+					stream.on('error', (err) => {
+						console.error(err);
+						res.status(500);
+						res.end();
 					});
+					stream.pipe(res);
 				} else {
 					res.status(404);
 					res.end();
