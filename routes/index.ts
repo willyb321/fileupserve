@@ -141,7 +141,7 @@ router.get('/login', passport.authenticate('auth0', opts),
 		res.redirect('/');
 	});
 
-router.get('/logout', function (req, res) {
+router.get('/logout', (req, res) => {
 	req.logout();
 	res.redirect('/');
 });
@@ -150,8 +150,8 @@ router.get('/callback',
 	passport.authenticate('auth0', {
 		failureRedirect: '/failure'
 	}),
-	function (req, res) {
-		res.redirect(req.session.returnTo || '/user');
+	(req, res) => {
+		res.redirect(req.session.returnTo || '/');
 	}
 );
 
