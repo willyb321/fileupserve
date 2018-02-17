@@ -43,13 +43,13 @@ router.post('/', basicAuth({
 	challenge: true
 }), upload.single('imageData'), (req: Request, res: express.Response) => {
 	if (req.file) {
-		req.file.properURL = `/i/${req.file.id}.png`;
+		req.file.properURL = `/i/${req.file.filename}.png`;
 		req.file.thumbPath = proxyImg(req.file.properURL);
 		insertImg(req.file)
 			.then((data: checkDB) => {
 				if (data.exists === true) {
 					console.log(req.file);
-					const url: string = `${req.get('X-Forwarded-Proto') || req.protocol}://${req.get('X-Forwarded-Host') || req.get('host')}/i/${req.file.id}.png`;
+					const url: string = `${req.get('X-Forwarded-Proto') || req.protocol}://${req.get('X-Forwarded-Host') || req.get('host')}/i/${req.file.filename}.png`;
 					const toReturn: addedData = {done: true, url: url, deleteURL: `${url}?delete=true`};
 					res.json(toReturn);
 				}

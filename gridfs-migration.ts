@@ -22,16 +22,24 @@ dbDocModel.find({})
 				dbCount = count;
 			});
 		docs.forEach((doc: dbDoc) => {
+			const stream = createReadStream(doc.path);
+			stream.on('error', console.error);
 			//create or save a file
 			Attachment.write({
-				_id: doc._id,
 				filename: doc.filename,
-				contentType: doc.mimetype || 'image/png'
-			}, createReadStream(doc.path), (err, createdFile) => {
+				contentType: doc.mimetype || 'image/png',
+				metadata: {
+					imgId: doc.imgId
+				}
+			}, stream, (err, createdFile) => {
 				if (err) {
 					console.error(err);
 				} else {
 					console.log(createdFile);
+					dbDocModel.update({_id: doc._id}, {gridId: createdFile._id, properURL: `/i/${createdFile.filename}.png`})
+						.catch(err => {
+							console.error(err);
+						})
 				}
 			});
 			Attachment.count({})

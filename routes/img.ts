@@ -1,6 +1,6 @@
 ///<reference path="../node_modules/@types/node/index.d.ts"/>
 import * as express from 'express';
-import {getImg, checkDB, removeImg, db, dbDocModel} from './dbutils'
+import {getImg, checkDB, removeImg, db, dbDocModel, dbDoc} from './dbutils'
 import * as fs from 'fs-extra';
 import * as basicAuth from 'express-basic-auth';
 import { join } from 'path';
@@ -26,16 +26,30 @@ router.get('/:id\.:ext?', (req: express.Request, res: express.Response, next: ex
 	if (req.query.delete) {
 		next();
 	} else {
-		Attachment.readById(id, (err, buf) => {
-			if (err) {
+		dbDocModel.findOne({filename: id})
+			.then((doc: dbDoc) => {
+				if (doc) {
+					Attachment.readById(doc.gridId, (err, buf) => {
+						if (err) {
+							console.error(err);
+							res.status(500);
+							res.end();
+						} else {
+							res.type('image/png');
+							res.send(buf);
+						}
+					});
+				} else {
+					res.status(404);
+					res.end();
+				}
+			})
+			.catch(err => {
 				console.error(err);
 				res.status(500);
 				res.end();
-			} else {
-				res.type('image/png');
-				res.send(buf);
-			}
-		});
+			});
+
 	}
 });
 
@@ -46,22 +60,25 @@ router.get('/:id.:ext?', basicAuth({
 	challenge: true
 }), (req: express.Request, res: express.Response) => {
 	const id: string = req.params.id;
-	Attachment.unlinkById(id, (err, unlinked) => {
-		if (err) {
+	dbDocModel.findOneAndRemove({filename: id})
+		.then((doc: dbDoc) => {
+			if (doc) {
+				Attachment.unlinkById(doc.gridId, (err, unlinked) => {
+					if (err) {
+						res.status(500);
+						res.end();
+					} else {
+						res.json({doc, unlinked})
+					}
+				})
+			}
+		})
+		.catch(err => {
+			console.error(err);
 			res.status(500);
 			res.end();
-		} else {
-			dbDocModel.findOneAndRemove({filename: unlinked.filename}, (err) => {
-				if (err !== null) {
-					console.log(err);
-					res.json({deleted: false, err});
-				} else {
-					res.json({deleted: true, unlinked});
-				}
-			});
-			console.log(unlinked);
-		}
-	})
+		});
+
 });
 
 export default router;
