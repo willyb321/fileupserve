@@ -73,12 +73,19 @@ const MongoStore = connect_mongo(session);
 // view engine setup
 app.set('views', join(__dirname, '..', 'views'));
 app.set('view engine', 'pug');
+if (process.env.NODE_ENV === 'production') {
+	app.set('trust proxy', 1);
+}
 app.use(session({
 	secret: process.env.SESSION_SECRET,
-	resave: true,
-	saveUninitialized: true,
+	resave: false,
+	cookie: {
+		secure: process.env.NODE_ENV === 'production' ? true : false,
+
+	},
+	saveUninitialized: false,
 	proxy: true,
-	store: new MongoStore({url: process.env.MONGO_URL})
+	store: new MongoStore({url: process.env.MONGO_URL, touchAfter: 24 * 3600})
 }));
 
 app.use(passport.initialize());
