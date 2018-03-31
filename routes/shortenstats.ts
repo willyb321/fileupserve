@@ -1,16 +1,11 @@
 ///<reference path="../node_modules/@types/node/index.d.ts"/>
 import * as express from 'express';
 import {url, UrlModel} from "./dbutils";
-import * as basicAuth from 'express-basic-auth';
+import {ensureLoggedIn} from 'connect-ensure-login';
 
 const router = express.Router();
 
-router.get('/', basicAuth({
-	users: {
-		uploader: (process.env.FILEUPSERVE_PW || 'test')
-	},
-	challenge: true
-}), (req: express.Request, res: express.Response) => {
+router.get('/', ensureLoggedIn('/login'), (req: express.Request, res: express.Response) => {
 	UrlModel.find({})
 		.sort({click_count: -1})
 		.limit(50)
