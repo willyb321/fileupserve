@@ -1,25 +1,12 @@
 ///<reference path="../node_modules/@types/node/index.d.ts"/>
 import * as express from 'express';
-import {join, parse} from 'path';
 import * as klawSync from 'klaw-sync';
-import * as sharp from 'sharp';
-import * as basicAuth from 'express-basic-auth';
-import * as fs from 'fs-extra';
-import * as paginate from 'paginate-array';
-import * as _ from 'lodash';
-import {getAllImgs, dbDocModel, dbDoc} from './dbutils';
+import {getAllImgs, dbDocModel} from './dbutils';
 import * as mongoose from 'mongoose';
-import * as crypto from 'crypto';
-import * as probe from 'probe-image-size';
-import {existsSync, readFileSync} from 'fs';
 import * as passport from 'passport';
 import {ensureLoggedIn} from 'connect-ensure-login';
 
 const router: express.Router = express.Router();
-let thumbs = [];
-const filesPath: string = join(__dirname, '..', 'uploads');
-const KEY = process.env.IMGPROXY_KEY;
-const SALT = process.env.IMGPROXY_SALT;
 
 getThumbsForGallery()
 	.then(() => {
@@ -118,13 +105,6 @@ export interface thumbReturn {
 		data: Array<thumbObj | fileObj>;
 	}
 	pagination: any;
-}
-
-export function sharpie(info: fileObj) {
-	info.filePath = info.path;
-	info.properURL = `/i/${parse(info.filePath).base}`;
-	info.path = proxyImg(info.properURL);
-	return info;
 }
 
 const opts = {
