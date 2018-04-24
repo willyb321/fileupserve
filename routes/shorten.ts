@@ -1,9 +1,8 @@
-///<reference path="../node_modules/@types/node/index.d.ts"/>
 import * as express from 'express';
-import {join} from 'path';
 import * as shortid from 'shortid';
 import * as basicAuth from 'express-basic-auth';
-import {url, UrlModel} from "./dbutils";
+import * as rp from 'request-promise';
+import {url} from './dbutils';
 
 const router = express.Router();
 
@@ -19,30 +18,41 @@ router.get('/', basicAuth({
 		res.end();
 		return;
 	}
-	// check if url already exists in database
-	UrlModel.findOne({long_url: req.query.longURL}, (err, doc: url) => {
-		if (doc) {
-			// URL has already been shortened
-			res.json({shortURL: `${process.env.DOMAIN}/s/${doc._id}`})
-		} else {
-			// The long URL was not found in the long_url field in our urls
-			// collection, so we need to create a new entry
-			const shortDoc: url = new UrlModel({
-				_id: shortid.generate(),
-				long_url: req.query.longURL,
-				created_at: new Date()
-			});
-			shortDoc.save((err: Error) => {
-				if (err) {
-					console.log(err);
+	const options: rp.Options = {
+		uri: 'https://kutt.it/api/url/geturls',
+		headers: {
+			'User-Agent': 'Request-Promise',
+			'X-API-Key': process.env.KUTT_KEY
+		},
+		json: true // Automatically parses the JSON string in the response
+	};
+
+	rp(options)
+		.then(urls => {
+			const current = urls.list.find(elem => elem.target === req.query.longURL);
+			if (current) {
+				console.log(`Found URL ${req.query.longURL}`);
+				console.log(current);
+				return res.json({shortURL: `${current.shortUrl}`});
+			}
+			options.uri = 'https://kutt.it/api/url/submit';
+			options.method = 'POST';
+			options.body = {target: req.query.longURL};
+			return rp(options)
+				.then(data => {
+					return res.json({shortURL: `${data.shortUrl}`});
+				})
+				.catch(err => {
+					console.error(err);
 					res.status(500);
 					res.end();
-				} else {
-					res.json({shortURL: `${process.env.DOMAIN}/s/${shortDoc._id}`})
-				}
-			})
-		}
-	});
+				})
+		})
+		.catch(err => {
+			console.error(err);
+			res.status(500);
+			res.end();
+		});
 });
 
 export default router;

@@ -20,7 +20,6 @@ import index from './routes/index';
 import upload from './routes/upload';
 import img from './routes/img';
 import shorten from './routes/shorten';
-import shortened from './routes/shortened';
 import stats from './routes/shortenstats';
 
 const flash = require('connect-flash');
@@ -124,7 +123,6 @@ app.use('/', index);
 app.use('/i', img);
 app.use('/upload', upload);
 app.use('/sh', shorten);
-app.use('/s/', shortened);
 app.use('/stats', stats);
 
 export default app;

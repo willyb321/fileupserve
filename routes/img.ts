@@ -1,11 +1,9 @@
-///<reference path="../node_modules/@types/node/index.d.ts"/>
 import * as express from 'express';
 import {getImg, checkDB, removeImg, db, dbDocModel, dbDoc} from './dbutils'
 import * as fs from 'fs-extra';
 import * as basicAuth from 'express-basic-auth';
 import { join } from 'path';
 import * as mongoose from "mongoose";
-// const db = new Datastore({filename: require('path').join(__dirname, 'imgDb.db'), autoload: true});
 db.on('error', console.error.bind(console, 'connection error:'));
 let Attachment;
 let gridfs;
@@ -18,7 +16,7 @@ db.once('open', () => {
 });
 const router = express.Router();
 
-router.get('/:id\.:ext?', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get('/:id\.:ext?', (req, res, next) => {
 	const id: string = req.params.id;
 	if (!req.params.ext) {
 		return res.redirect(`/i/${req.params.id}.png`);

@@ -154,4 +154,4 @@ export interface url extends mongoose.Document {
 	click_count?: number;
 }
 
-export const UrlModel: mongoose.Model<url> = mongoose.model('UrlModel', urlSchema);
+// export const UrlModel: mongoose.Model<url> = mongoose.model('UrlModel', urlSchema);

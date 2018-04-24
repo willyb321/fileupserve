@@ -1,7 +1,6 @@
 extends layout
 
 block content
-	- const truncateString = (str, num) => str.length > num ? str.slice(0, num > 3 ? num - 3 : num) + '...' : str;
 	section.hero.is-primary.is-bold
 		.hero-body
 			.container
@@ -10,20 +9,19 @@ block content
 	.container
 		table.table.is-bordered.is-striped
 			tbody
-			each val,ind in stats
+			each val,ind in stats.list
 				tr
 					th Index
 					td= ind
 					th Long URL
 					td
-						a(href= val.long_url title= val.long_url)= truncateString(val.long_url, 20)
+						a(href= val.target title= val.target)= val.truncated
 					th Short URL
 						td
-							a(href= domain + "/s/" + val._id)= domain + "/s/" + val._id
+							a(href= val.shortUrl)= val.shortUrl
 					th ID
-					td= val._id
+					td= val.id
 					th Click Count
-					td= val.click_count
+					td= val.count
 					th Created At
-					td= val.created_at
-				//#{ind + 1} #{val._id} - #{val.click_count} clicks
+					td= val.createdAt
